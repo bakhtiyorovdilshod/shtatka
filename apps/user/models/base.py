@@ -17,3 +17,6 @@ class BaseSchema(BaseModel):
     created_date: datetime
     updated_date: datetime
     is_deleted: bool
+
+
+__all__ = ['BaseSchema', 'base_model']

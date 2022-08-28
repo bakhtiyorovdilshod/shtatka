@@ -5,7 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from core.settings import settings, metadata
+from core.settings import settings
+from apps.user.models import metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
