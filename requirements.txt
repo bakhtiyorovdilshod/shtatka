@@ -5,6 +5,8 @@ alembic==1.7.1
 pydantic==1.9.2
 databases==0.6.1
 asyncpg==0.26.0
+requests==2.28.1
+fastapi-admin==1.0.4
 
 
 
