@@ -15,6 +15,6 @@ class OrganizationListCreateSchema(BaseModel):
 
 class CreateShtatDepartmentSchema(BaseModel):
     name: str
-    code: int
+    code: str
     users: List[UserListCreateSchema]
     organizations: List[OrganizationListCreateSchema]
