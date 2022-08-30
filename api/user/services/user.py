@@ -1,8 +1,11 @@
 from typing import Union, Optional
 import requests, json
+from sqlalchemy import select
 
-from api.user.schemas.user import UpdateOrganizationSchema
+from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema
 from api.user.utils.page import fix_pagination
+from apps.user.models import UserRoleTable
+from core.settings import database
 
 
 class UserService:
@@ -53,4 +56,25 @@ class UserService:
         json_data = json.dumps(json_data)
         response = requests.put(url=url, headers=headers, data=json_data, verify=False)
         return response.status_code
+
+    @staticmethod
+    async def user_role_list():
+        data = []
+        roles = select([UserRoleTable])
+        results = await database.fetch_all(roles)
+        for result in results:
+            data.append({
+                'id': result.id,
+                'name': result.name
+            })
+        return data
+
+    @staticmethod
+    async def user_role_create(data: CreateRoleSchema):
+        async with database.transaction():
+            role = UserRoleTable.insert().values(
+                name=data.name
+            )
+            role_id = await database.execute(role)
+            return role_id
 

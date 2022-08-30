@@ -9,4 +9,6 @@ router = APIRouter()
 
 @router.post('/department/',  tags=['department'])
 async def create_department(data: CreateShtatDepartmentSchema):
-    return await DepartmentService().create_department(data=data)
+    service_result = await DepartmentService().create_department(data=data)
+    return {'status': 'success'}
+

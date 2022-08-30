@@ -6,24 +6,24 @@ from apps.user.models import metadata
 BASE_FIELDS = base_model()
 
 SHTAT_DEPARTMENT_FIELDS = [
-    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
-    sqlalchemy.Column('name', sqlalchemy.String(255)),
-    sqlalchemy.Column('code', sqlalchemy.String(80)),
+    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('name', sqlalchemy.String(255), nullable=False),
+    sqlalchemy.Column('code', sqlalchemy.String(80), nullable=False, unique=True),
 
 ]
 
 SHTAT_DEPARTMENT_ORGANIZATION_FIELDS = [
-    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
-    sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id')),
-    sqlalchemy.Column('organization_id', sqlalchemy.ForeignKey('shtat_organizations.id')),
+    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id', ondelete="CASCADE"), nullable=False),
+    sqlalchemy.Column('organization_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
 
 ]
 
 
 SHTAT_DEPARTMENT_USER_FIELDS = [
-    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
-    sqlalchemy.Column('user_id', sqlalchemy.ForeignKey('users.id')),
-    sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id')),
+    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
+    sqlalchemy.Column('user_id', sqlalchemy.ForeignKey('users.id'), nullable=False),
+    sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id', ondelete="CASCADE"), nullable=False),
 
 ]
 

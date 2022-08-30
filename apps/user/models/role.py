@@ -7,7 +7,7 @@ BASE_FIELDS = base_model()
 
 FIELDS = [
     *BASE_FIELDS,
-    sqlalchemy.Column('name', sqlalchemy.String(255))
+    sqlalchemy.Column('name', sqlalchemy.String(255), unique=True)
 ]
 
 UserRoleTable = sqlalchemy.Table(
