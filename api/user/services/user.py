@@ -1,10 +1,13 @@
 from typing import Union, Optional
 import requests, json
+from fastapi import HTTPException
 from sqlalchemy import select
+from passlib.hash import pbkdf2_sha256
 
-from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema
+from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema
+from api.user.services.auth import UserAuthenticationService
 from api.user.utils.page import fix_pagination
-from apps.user.models import UserRoleTable
+from apps.user.models import UserRoleTable, UserTable
 from core.settings import database
 
 
@@ -72,9 +75,54 @@ class UserService:
     @staticmethod
     async def user_role_create(data: CreateRoleSchema):
         async with database.transaction():
+            query = 'SELECT name FROM user_roles WHERE name = :name '
+            result = await database.fetch_one(query=query, values={'name': data.name})
+            if result:
+                raise HTTPException(status_code=400, detail='role has already existed')
             role = UserRoleTable.insert().values(
                 name=data.name
             )
             role_id = await database.execute(role)
             return role_id
+
+    @staticmethod
+    async def create_user(data: UserCreateSchema):
+        async with database.transaction():
+            query = 'SELECT username FROM users WHERE username = :username or pinfl = :pinfl'
+            has_user = await database.fetch_one(query=query, values={'username': data.username, 'pinfl': data.pinfl})
+            if has_user:
+                raise HTTPException(status_code=400, detail='user has already existed')
+
+            role_query = 'SELECT id FROM user_roles WHERE id = :role_id'
+            role_id = await database.fetch_one(query=role_query, values={'role_id': data.role_id})
+            if not role_id:
+                raise HTTPException(status_code=404, detail='role_id has not found')
+
+            user = UserTable.insert().values(
+                full_name=data.full_name,
+                username=data.username,
+                pinfl=data.pinfl,
+                password=pbkdf2_sha256.hash(data.password),
+                role_id=data.role_id
+            )
+            user_id = await database.execute(user)
+            access_token = UserAuthenticationService().create_access_token(user_id)
+            return {'status': 'success', 'access_token': access_token, 'user_id': user_id}
+
+    @staticmethod
+    async def login(data: UserLoginSchema):
+        login_query = 'SELECT username, id, password FROM users WHERE username = :username'
+        user = await database.fetch_one(query=login_query, values={'username': data.username})
+
+        if not user:
+            raise HTTPException(status_code=400, detail='username is in incorrect')
+        if not pbkdf2_sha256.verify(data.password, user.password):
+            raise HTTPException(status_code=400, detail='password is in incorrect')
+
+        access_token = UserAuthenticationService().create_access_token(user.id)
+        return {'status': 'success', 'access_token': access_token, 'user_id': user.id}
+
+
+
+
 

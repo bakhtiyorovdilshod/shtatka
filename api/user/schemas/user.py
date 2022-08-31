@@ -1,3 +1,4 @@
+from fastapi import HTTPException, Depends
 from pydantic import BaseModel, validator
 from typing import List
 
@@ -16,7 +17,23 @@ class UpdateOrganizationSchema(BaseModel):
 class CreateRoleSchema(BaseModel):
      name: str
 
-     # @validator("name")
-     # async def unique_name(cls, value):
-     #     role = select[UserRoleTable].where(name=value)
-     #     result = await database.fetch_all(role)
+
+class UserCreateSchema(BaseModel):
+    full_name: str
+    pinfl: str
+    username: str
+    password: str
+    role_id : int
+
+
+class UserLoginSchema(BaseModel):
+    username: str
+    password: str
+
+
+class UserDetailSchema(BaseModel):
+    # id: int
+    # full_name: str
+    # username: str
+    # role_id: int
+    is_active: bool
