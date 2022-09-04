@@ -79,4 +79,14 @@ class DepartmentService(Queryset):
             })
         return data
 
+    @staticmethod
+    async def department_detail():
+        query = 'SELECT name, code, shtat_user.user_id FROM shtat_departments ' \
+                'JOIN shtat_department_users as shtat_user ' \
+                'ON shtat_user.shtat_department_id = shtat_departments.id' \
+                'JOIN shtat_department_organizations as shtat_org' \
+                'ON shtat_org.shtat_department_id = shtat_departments.id'
+        result = database.fetch_all(query=query)
+        print(result)
+
 

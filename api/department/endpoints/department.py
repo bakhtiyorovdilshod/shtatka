@@ -22,9 +22,9 @@ async def create_department(page: int = 1, page_size: int = 2, request: Request 
     return service_result
 
 
-# @router.get('/department/{id}/',  tags=['department'])
-# async def get_organization_detail(id: int, user: UserDetailSchema = Depends(is_authenticated)):
-#     service_result = await DepartmentService().
-#     return service_result
+@router.get('/department/{id}/',  tags=['department'])
+async def get_organization_detail(id: int, user: UserDetailSchema = Depends(is_authenticated)):
+    service_result = await DepartmentService().department_detail()
+    return {'ok'}
 
 
