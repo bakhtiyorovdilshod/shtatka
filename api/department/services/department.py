@@ -2,12 +2,15 @@ from fastapi import HTTPException
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 
 from api.department.schemas.department import CreateShtatDepartmentSchema
+from api.user.utils.queryset import Queryset
 from apps.user.models import ShtatDepartmentTable, ShtatDepartmentUser, UserTable, OrganizationTable, \
     ShtatDepartmentOrganizationTable
 from core.settings import database
 
 
-class DepartmentService:
+class DepartmentService(Queryset):
+    model = ShtatDepartmentTable
+
     @staticmethod
     async def create_department(data: CreateShtatDepartmentSchema):
         async with database.transaction():
