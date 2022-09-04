@@ -8,7 +8,7 @@ BASE_FIELDS = base_model()
 ORGANIZATION_FIELDS = [
     *BASE_FIELDS,
     sqlalchemy.Column('name', sqlalchemy.String(255)),
-    sqlalchemy.Column('organization_tin', sqlalchemy.String(80)),
+    sqlalchemy.Column('organization_tin', sqlalchemy.String(80), unique=True),
 
 ]
 

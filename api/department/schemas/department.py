@@ -6,6 +6,7 @@ class UserListCreateSchema(BaseModel):
     pinfl: str
     full_name: str
     role_id: int
+    username: str
 
 
 class OrganizationListCreateSchema(BaseModel):
