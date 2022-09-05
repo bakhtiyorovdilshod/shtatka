@@ -19,3 +19,10 @@ class CreateShtatDepartmentSchema(BaseModel):
     code: str
     users: List[UserListCreateSchema]
     organizations: List[OrganizationListCreateSchema]
+
+
+class UpdateShtatDepartmentSchema(BaseModel):
+    name: str
+    code: str
+    users: List[UserListCreateSchema]
+    organizations: List[OrganizationListCreateSchema]

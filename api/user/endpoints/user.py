@@ -68,3 +68,9 @@ async def create_user(data: UserCreateSchema):
 async def login_user(data: UserLoginSchema):
     result = await UserService().login(data=data)
     return result
+
+
+@router.get('/shtat/users/', tags=['user'])
+async def login_user():
+    result = await UserService().shtat_users()
+    return result

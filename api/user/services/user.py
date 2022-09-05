@@ -103,7 +103,8 @@ class UserService:
                 username=data.username,
                 pinfl=data.pinfl,
                 password=pbkdf2_sha256.hash(data.password),
-                role_id=data.role_id
+                role_id=data.role_id,
+                is_active=True
             )
             user_id = await database.execute(user)
             access_token = UserAuthenticationService().create_access_token(user_id)
@@ -121,6 +122,32 @@ class UserService:
 
         access_token = UserAuthenticationService().create_access_token(user.id)
         return {'status': 'success', 'access_token': access_token, 'user_id': user.id}
+
+    @staticmethod
+    async def shtat_users():
+        data = []
+        query = 'SELECT users.id, users.full_name, user_roles.name, users.is_active FROM users INNER JOIN user_roles ON users.role_id = user_roles.id'
+        users = await database.fetch_all(query=query, values={})
+        for user in users:
+            department = None
+            query = 'SELECT * FROM shtat_department_users INNER JOIN shtat_departments ON shtat_department_users.shtat_department_id=shtat_departments.id WHERE shtat_department_users.user_id= :user_id'
+            department_query = await database.fetch_one(query=query, values={'user_id': user.id})
+            if department_query:
+                department = {
+                    'id': department_query.id,
+                    'name': department_query.name,
+                    'code': department_query.code
+                }
+            data.append({
+                'id': user.id,
+                'full_name': user.full_name,
+                'role': user.name,
+                'is_active': user.is_active,
+                'department': department
+            })
+        return data
+
+
 
 
 
