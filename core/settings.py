@@ -13,7 +13,7 @@ class MainSettings(BaseSettings):
     PROJECT_NAME: str = 'SHTATKA'
     SECRET_KEY: str = secrets.token_urlsafe(32)
     VERSION: str = '1.0.0'
-    DATABASE_URL: str = f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'
+    DATABASE_URL: str = os.environ.get('DATABASE_URL', f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}')
     ACCESS_TOKEN_EXPIRE_DAY: int = 70
     ALGORITHM: str = "HS256"
 
