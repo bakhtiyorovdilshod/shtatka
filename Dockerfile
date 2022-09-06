@@ -4,9 +4,9 @@ ENV PYHTONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
 # creating a folder.
-RUN mkdir -p /web/shtatka
+RUN mkdir -p /web/
 
-ENV APP_HOME=/web
+ENV APP_HOME=/web/shtatka
 
 WORKDIR ${APP_HOME}
 
