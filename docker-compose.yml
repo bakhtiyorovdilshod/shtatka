@@ -24,7 +24,7 @@ services:
       - 5432
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=u1710016
 
   nginx:
     build: ./nginx
