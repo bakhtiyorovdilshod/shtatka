@@ -23,6 +23,7 @@ RUN pip install --upgrade pip
 
 COPY ./requirements.txt ${APP_HOME}/requirements.txt
 
+RUN apk add build-base
 RUN pip install -r requirements.txt
 COPY entrypoint.sh ${APP_HOME}/entrypoint.sh
 
