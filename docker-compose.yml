@@ -13,7 +13,7 @@ services:
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
-      - DATABASE_URL=postgres://postgres:u1710016@db:5432/shtatka_db
+      - DATABASE_URL=postgresql://postgres:u1710016@db:5432/shtatka_db
 
     depends_on:
       - db
