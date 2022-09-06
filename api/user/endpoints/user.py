@@ -53,7 +53,7 @@ async def user_roles(user: UserDetailSchema = Depends(is_authenticated)):
 
 
 @router.post('/shtat/role/create/', tags=['role'])
-async def role_create(data: CreateRoleSchema, user: UserDetailSchema = Depends(is_authenticated)):
+async def role_create(data: CreateRoleSchema):
     role = await UserService().user_role_create(data=data)
     return {'status': 'success'}
 
