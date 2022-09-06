@@ -25,8 +25,8 @@ services:
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=shtatka_user
+      - POSTGRES_PASSWORD=shtatka_user_password
 
   nginx:
     build: ./nginx
