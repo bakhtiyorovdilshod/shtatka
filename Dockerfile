@@ -6,8 +6,8 @@ ENV APP_DIR = /web/shtatka
 # set working directory
 WORKDIR ${APP_DIR}
 
-RUN mkdir ${APP_DIR}/staticfiles
-RUN mkdir ${APP_DIR}/media
+RUN mkdir -p  ${APP_DIR}/staticfiles
+RUN mkdir -p ${APP_DIR}/media
 
 
 # set environment variables
