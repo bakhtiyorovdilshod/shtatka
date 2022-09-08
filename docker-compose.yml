@@ -36,7 +36,6 @@ services:
       - media_volume:/web/shtatka/media/
     ports:
       - 1337:80
-      - 443:443
     depends_on:
       - web
     links:
