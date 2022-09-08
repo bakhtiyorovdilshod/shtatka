@@ -16,9 +16,21 @@ FIELDS = [
 
 ]
 
+USER_PERMISSION_FIELDS = [
+    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
+    sqlalchemy.Column('user_id', sqlalchemy.ForeignKey('users.id'), nullable=False),
+    sqlalchemy.Column('permission_id', sqlalchemy.ForeignKey('permissions.id'), nullable=False)
+
+]
+
 UserTable = sqlalchemy.Table(
     'users',  metadata, *FIELDS
 )
 
+UserPermissionTable = sqlalchemy.Table(
+    'user_permissions', metadata, *USER_PERMISSION_FIELDS
+)
 
-__all__ = ['metadata', 'UserTable']
+
+__all__ = ['metadata', 'UserTable', 'UserPermissionTable']
+
