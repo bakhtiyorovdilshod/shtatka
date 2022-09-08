@@ -11,4 +11,8 @@ class GivePermissionSchema(BaseModel):
     user_id: int
 
 
+class CreatePermissionSchema(BaseModel):
+    name: str
+
+
 
