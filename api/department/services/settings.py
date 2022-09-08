@@ -17,7 +17,7 @@ class DepartmentSettingsService:
         insert_query = None
         values = list()
         for permission in data.permissions:
-            insert_query = 'INSERT INTO user_permissions(user_id, permission_id) VALUES (:user_id, :permission_id)'
+            insert_query = 'INSERT OR UPDATE user_permissions.Records (user_id, permission_id) VALUES (:user_id, :permission_id)'
             permission_query = 'SELECT id FROM permissions WHERE id= :permission_id'
             permission_row = await database.fetch_one(query=permission_query, values={'permission_id': permission.permission_id})
             if not permission_row:
