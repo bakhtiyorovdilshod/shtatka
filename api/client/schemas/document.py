@@ -5,22 +5,22 @@ from typing import List
 
 class ListPositionSchema(BaseModel):
     name: str
-    base_salary: Decimal
-    bonus_salary: Decimal
+    base_salary: int
+    bonus_salary: int
     count: int
-    minimal_salary: Decimal
-    other_bonus_salary: Decimal
-    razryad_coefficient: Decimal
+    minimal_salary: int
+    other_bonus_salary: int
+    razryad_coefficient: int
     razryad_subtract: int
     razryad_value: int
-    right_coefficient: Decimal
+    right_coefficient: int
 
 
 class ListDepartmentSchema(BaseModel):
     name: str
-    total_base_salary: Decimal
-    total_bonus_salary: Decimal
-    total_minimal_salary: Decimal
+    total_base_salary: int
+    total_bonus_salary: int
+    total_minimal_salary: int
     total_count: int
     positions: List[ListPositionSchema]
 
@@ -30,10 +30,11 @@ class ListDocumentSchema(BaseModel):
     chapter_code: str
     department_code: str
     small_department_code: str
+    name: str
     is_main: bool
     departments: List[ListDepartmentSchema]
 
 
 class AcceptDocumentSchema(BaseModel):
-    organization_inn: str
+    organization_tin: str
     documents: List[ListDocumentSchema]

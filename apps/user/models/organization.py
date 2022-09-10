@@ -1,4 +1,4 @@
-import sqlalchemy
+import sqlalchemy, enum
 from sqlalchemy import func
 
 from apps.user.models.base import base_model
@@ -13,6 +13,14 @@ ORGANIZATION_FIELDS = [
 
 ]
 
+
+class StatusChoice(enum.Enum):
+    pending = 'pending'
+    checked = 'checked'
+    approved = 'approved'
+    confirmed = 'confirmed'
+
+
 FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
     sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
@@ -22,7 +30,8 @@ FIELDS = [
     sqlalchemy.Column('department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('small_department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('is_main', sqlalchemy.Boolean(), default=False),
-    sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False)
+    sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
+    sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending')
 
 ]
 

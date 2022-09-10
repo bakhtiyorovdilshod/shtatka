@@ -15,10 +15,11 @@ CLIENT_DEPARTMENT_POSITION_FIELDS = [
     sqlalchemy.Column('bonus_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),
     sqlalchemy.Column('minimal_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),
     sqlalchemy.Column('other_bonus_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),
-    sqlalchemy.Column('razryad_coefficient', sqlalchemy.DECIMAL(5, 3), nullable=False),
-    sqlalchemy.Column('razryad_value', sqlalchemy.DECIMAL(15, 2), nullable=False),
+    sqlalchemy.Column('razryad_coefficient', sqlalchemy.FLOAT, nullable=False),
+    sqlalchemy.Column('razryad_value', sqlalchemy.INTEGER, nullable=False),
     sqlalchemy.Column('razryad_subtract', sqlalchemy.INTEGER, nullable=False),
-    sqlalchemy.Column('client_department_id', sqlalchemy.ForeignKey('client_departments.id'), nullable=False)
+    sqlalchemy.Column('client_department_id', sqlalchemy.ForeignKey('client_departments.id'), nullable=False),
+    sqlalchemy.Column('right_coefficient', sqlalchemy.FLOAT, default=0)
 
 ]
 
