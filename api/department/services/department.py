@@ -172,6 +172,28 @@ class DepartmentService(Queryset):
                 await database.execute(shtat_department_organization)
         return {'success'}
 
+    @staticmethod
+    async def department_users(department_id: int):
+        data = []
+        query = 'SELECT users.id, users.full_name FROM shtat_department_users INNER JOIN users ' \
+                'ON shtat_department_users.user_id=users.id WHERE shtat_department_id= :department_id'
+        users = await database.fetch_all(query=query, values={'department_id': department_id})
+        for user in users:
+            user_permissions = []
+            query = 'SELECT permissions.id, permissions.name FROM user_permissions INNER JOIN permissions ON user_permissions.permission_id=permissions.id WHERE user_id= :user_id'
+            permissions = await database.fetch_all(query=query, values={'user_id': user.id})
+            for permission in permissions:
+                user_permissions.append({
+                    'id': permission.id,
+                    'name': permission.name
+                })
+            data.append({
+                'id': user.id,
+                'full_name': user.full_name,
+                'permissions': user_permissions
+            })
+        return data
+
 
 
 

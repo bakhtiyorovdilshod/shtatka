@@ -34,3 +34,9 @@ async def get_organization_detail(id: int, data: UpdateShtatDepartmentSchema):
     return service_result
 
 
+@router.get('/department/{id}/list/users/',  tags=['department_users'])
+async def department_users(id: int, user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().department_users(department_id=id)
+    return result
+
+

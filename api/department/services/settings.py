@@ -16,8 +16,10 @@ class DepartmentSettingsService:
             raise HTTPException(status_code=400, detail='user has not founded')
         insert_query = None
         values = list()
+        old_permissions = 'DELETE FROM user_permissions WHERE user_id= :user_id'
+        await database.execute(query=old_permissions, values={'user_id': data.user_id})
         for permission in data.permissions:
-            insert_query = 'INSERT OR UPDATE user_permissions.Records (user_id, permission_id) VALUES (:user_id, :permission_id)'
+            insert_query = 'INSERT INTO user_permissions(user_id, permission_id) VALUES (:user_id, :permission_id)'
             permission_query = 'SELECT id FROM permissions WHERE id= :permission_id'
             permission_row = await database.fetch_one(query=permission_query, values={'permission_id': permission.permission_id})
             if not permission_row:
@@ -54,6 +56,8 @@ class DepartmentSettingsService:
                 'name': permission.name
             })
         return data
+
+
 
 
 

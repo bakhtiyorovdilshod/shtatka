@@ -24,3 +24,4 @@ async def create_permission(data: CreatePermissionSchema, user: UserDetailSchema
 @router.post('/permissions/',  tags=['permissions'])
 async def permissions(user: UserDetailSchema = Depends(is_authenticated)):
     return await DepartmentSettingsService().permissions()
+
