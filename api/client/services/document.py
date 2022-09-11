@@ -10,7 +10,6 @@ from core.settings import database
 class DocumentService:
     @staticmethod
     async def accept_client_documents(data: AcceptDocumentSchema):
-        print(data)
         async with database.transaction():
             query = 'SELECT id FROM shtat_organizations WHERE organization_tin= :organization_tin'
             organization = await database.fetch_one(query=query, values={'organization_tin': data.organization_tin})

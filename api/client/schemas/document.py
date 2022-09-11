@@ -32,6 +32,7 @@ class ListDocumentSchema(BaseModel):
     small_department_code: str
     name: str
     is_main: bool
+    uuid: str
     departments: List[ListDepartmentSchema]
 
 
