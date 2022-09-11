@@ -16,15 +16,34 @@ class DocumentService:
             if not organization:
                 raise HTTPException(status_code=400, detail='Access has been denied')
             for document in data.documents:
-                child_organization = OrganizationChildTable.insert().values(
-                    child_name=document.name,
-                    address=document.address,
-                    chapter_code=document.chapter_code,
-                    department_code=document.department_code,
-                    small_department_code=document.small_department_code,
-                    parent_id=organization.id,
-                    is_main=document.is_main
-                )
+                check_query = 'SELECT id FROM organization_children WHERE uuid= :uuid'
+                exist_child_organization = await database.fetch_one(query=check_query, values={'uuid': document.uuid})
+                if exist_child_organization:
+                    update_query = 'UPDATE organization_children ' \
+                                   'SET child_name= :name, address= :address, chapter_code= :chapter_code,' \
+                                   'department_code= :department_code, small_department_code= :small_department_code,' \
+                                   'parent_id= :parent_id, is_main= :is_main where uuid= :uuid'
+                    child_organization = await database.execute(query=update_query, values={
+                        'name': document.name,
+                        'address': document.address,
+                        'chapter_code': document.chapter_code,
+                        'department_code': document.department_code,
+                        'small_department_code': document.small_department_code,
+                        'parent_id': organization.id,
+                        'is_main': document.is_main,
+                        'uuid': document.uuid
+                    })
+                else:
+                    child_organization = OrganizationChildTable.insert().values(
+                        child_name=document.name,
+                        address=document.address,
+                        chapter_code=document.chapter_code,
+                        department_code=document.department_code,
+                        small_department_code=document.small_department_code,
+                        parent_id=organization.id,
+                        is_main=document.is_main,
+                        uuid=document.uuid
+                    )
                 child_id = await database.execute(child_organization)
                 for department in document.departments:
                     client_department = ClientDepartmentTable.insert().values(
