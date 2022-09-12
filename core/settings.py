@@ -5,7 +5,7 @@ from pydantic import BaseSettings
 
 
 class MainSettings(BaseSettings):
-    DATABASE_NAME: str = os.environ.get('DATABASE_NAME', 'shtatka')
+    DATABASE_NAME: str = os.environ.get('DATABASE_NAME', 'shtatka_db')
     DATABASE_USER: str = os.environ.get('DATABASE_USER', 'shtatka_user')
     DATABASE_PASSWORD: str = os.environ.get('DATABASE_PASSWORD', 'shtatka_user_password')
     DATABASE_HOST: str = os.environ.get('DATABASE_HOST', 'localhost')

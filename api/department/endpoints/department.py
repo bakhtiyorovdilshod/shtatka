@@ -40,3 +40,9 @@ async def department_users(id: int, user: UserDetailSchema = Depends(is_authenti
     return result
 
 
+@router.get('/department/{id}/sent_shtatka/',  tags=['sent_shtatka'])
+async def department_users(id: int, user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().client_shtatka_list(shtat_department_id=id)
+    return result
+
+

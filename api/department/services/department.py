@@ -194,6 +194,73 @@ class DepartmentService(Queryset):
             })
         return data
 
+    @staticmethod
+    async def client_shtatka_list(shtat_department_id: int):
+        data = []
+        shtatka_query = 'SELECT * FROM client_shtatkas INNER JOIN shtat_organizations ' \
+                        'ON client_shtatkas.parent_id=shtat_organizations.id ' \
+                        'WHERE parent_id in (' \
+                        'SELECT organization_id FROM shtat_department_organizations ' \
+                        'WHERE shtat_department_id= :shtat_department_id )'
+        shtatkas = await database.fetch_all(query=shtatka_query, values={'shtat_department_id': shtat_department_id})
+        for shtatka in shtatkas:
+            documents = []
+            query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id'
+            organization_children = await database.fetch_all(query=query, values={'client_shtatka_id': shtatka.id})
+            for child in organization_children:
+                department_list = []
+                department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
+                departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
+                for department in departments:
+                    position_list = []
+                    positions = await database.fetch_all(query='SELECT * FROM client_department_positions '
+                                                               'WHERE client_department_id= :client_department_id',
+                                                         values={
+                                                             'client_department_id': department.id
+                                                         })
+                    for position in positions:
+                        position_list.append({
+                            'name': position.name,
+                            'base_salary': position.base_salary,
+                            'count': position.count,
+                            'bonus_salary': position.bonus_salary,
+                            'minimal_salary': position.minimal_salary,
+                            'other_bonus_salary': position.other_bonus_salary,
+                            'razryad_coefficient': position.razryad_coefficient,
+                            'razryad_value': position.razryad_value,
+                            'razryad_subtract': position.razryad_subtract,
+                            'right_coefficient': position.right_coefficient
+                        })
+                    department_list.append({
+                        'name': department.name,
+                        'positions': position_list,
+                        'total_count': department.total_count,
+                        'total_minimal_salary': department.total_minimal_salary,
+                        'total_bonus_salary': department.total_bonus_salary,
+                        'total_base_salary': department.total_base_salary,
+
+                    })
+                documents.append({
+                    'name': child.child_name,
+                    'address': child.address,
+                    'chapter_code': child.chapter_code,
+                    'department_code': child.department_code,
+                    'small_department_code': child.small_department_code,
+                    'is_main': child.is_main,
+                    'departments': department_list
+                })
+            data.append({
+                'id': shtatka.id,
+                'status': shtatka.status,
+                'organization_name': shtatka.name,
+                'organization_tin': shtatka.organization_tin,
+                'documents': documents
+            })
+        return data
+
+
+
+
 
 
 

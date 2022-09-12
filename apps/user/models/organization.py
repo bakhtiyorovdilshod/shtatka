@@ -21,14 +21,6 @@ class StatusChoice(enum.Enum):
     confirmed = 'confirmed'
 
 
-ORGANIZATION_SHTATKA_FIELDS = [
-    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
-    sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
-    sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
-    sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending'),
-]
-
-
 FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
     sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
@@ -38,13 +30,22 @@ FIELDS = [
     sqlalchemy.Column('department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('small_department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('is_main', sqlalchemy.Boolean(), default=False),
-    sqlalchemy.Column('organization_shtatka_id', sqlalchemy.ForeignKey('organization_shtatka.id'), nullable=False),
+    sqlalchemy.Column('client_shtatka_id', sqlalchemy.ForeignKey('client_shtatkas.id'), nullable=False)
 
 ]
 
 
-OrganizationShtatkaTable = sqlalchemy.Table(
-    'organization_shtatka', metadata, *ORGANIZATION_SHTATKA_FIELDS
+CLIENT_SHTATKA_FIELDS = [
+    sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
+    sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
+    sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
+    sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending')
+
+]
+
+
+ClientShtatkaTable = sqlalchemy.Table(
+    'client_shtatkas', metadata, *CLIENT_SHTATKA_FIELDS
 )
 OrganizationTable = sqlalchemy.Table(
     'shtat_organizations', metadata, *ORGANIZATION_FIELDS
@@ -56,4 +57,4 @@ OrganizationChildTable = sqlalchemy.Table(
 )
 
 
-__all__ = ['metadata', 'OrganizationTable', 'OrganizationChildTable']
+__all__ = ['metadata', 'OrganizationTable', 'OrganizationChildTable', 'ClientShtatkaTable']

@@ -2,9 +2,6 @@ from fastapi import APIRouter, Request, Depends
 
 from api.client.schemas.document import AcceptDocumentSchema
 from api.client.services.document import DocumentService
-from api.user.schemas.user import UserDetailSchema
-from api.user.services.auth import UserAuthenticationService, is_authenticated
-
 
 router = APIRouter()
 
