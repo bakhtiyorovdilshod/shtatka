@@ -32,7 +32,6 @@ FIELDS = [
     sqlalchemy.Column('is_main', sqlalchemy.Boolean(), default=False),
     sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
     sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending'),
-    sqlalchemy.Column('uuid', sqlalchemy.String(2000), unique=True, nullable=False)
 
 ]
 

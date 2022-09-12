@@ -33,7 +33,7 @@ class UserLoginSchema(BaseModel):
 
 class UserDetailSchema(BaseModel):
     # id: int
-    # full_name: str
+    full_name: str
     # username: str
     # role_id: int
     is_active: bool

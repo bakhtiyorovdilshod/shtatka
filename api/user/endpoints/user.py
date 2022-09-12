@@ -74,3 +74,8 @@ async def login_user(data: UserLoginSchema):
 async def login_user():
     result = await UserService().shtat_users()
     return result
+
+
+@router.get('/shtat/user_me/',  tags=['user'])
+async def get_organization_detail(user: UserDetailSchema = Depends(is_authenticated)):
+    return {'full_name': user.full_name, 'active': user.is_active}

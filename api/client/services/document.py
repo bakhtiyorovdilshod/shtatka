@@ -8,8 +8,17 @@ from core.settings import database
 
 
 class DocumentService:
-    @staticmethod
-    async def accept_client_documents(data: AcceptDocumentSchema):
+
+    async def delete_old_position_and_department(self, child_id):
+        old_department_query = 'SELECT id FROM client_departments WHERE child_id= :child_id'
+        departments = await database.fetch_all(query=old_department_query, values={'child_id': child_id})
+        for department in departments:
+            position_query = 'DELETE FROM client_department_positions WHERE client_department_id= :client_department_id'
+            await database.execute(query=position_query, values={'client_department_id': department.id})
+        delete_department_query = 'DELETE FROM client_departments WHERE child_id= :child_id'
+        await database.execute(query=delete_department_query, values={'child_id': child_id})
+
+    async def accept_client_documents(self, data: AcceptDocumentSchema):
         async with database.transaction():
             query = 'SELECT id FROM shtat_organizations WHERE organization_tin= :organization_tin'
             organization = await database.fetch_one(query=query, values={'organization_tin': data.organization_tin})
@@ -19,7 +28,7 @@ class DocumentService:
                 check_query = 'SELECT id FROM organization_children WHERE parent_id= :parent_id'
                 exist_child_organization = await database.fetch_one(query=check_query, values={'parent_id': organization.id})
                 if exist_child_organization:
-                    child_organization = OrganizationChildTable.update().where(OrganizationChildTable.c.uuid == document.uuid).values(
+                    child_organization = OrganizationChildTable.update().where(OrganizationChildTable.c.parent_id == organization.id).values(
                         child_name=document.name,
                         address=document.address,
                         chapter_code=document.chapter_code,
@@ -36,13 +45,10 @@ class DocumentService:
                         department_code=document.department_code,
                         small_department_code=document.small_department_code,
                         parent_id=organization.id,
-                        is_main=document.is_main,
-                        uuid=document.uuid
+                        is_main=document.is_main
                     )
                     child_id = await database.execute(child_organization)
-                old_department_query = 'DELETE FROM client_departments WHERE child_id= :child_id'
-                await database.execute(query=old_department_query, values={'child_id': child_id})
-                old_department_position_query = 'DELETE FROM client_department_positions WHERE child_id= :child_id'
+                self.delete_old_position_and_department(child_id=child_id)
                 for department in document.departments:
                     client_department = ClientDepartmentTable.insert().values(
                         child_id=child_id,
