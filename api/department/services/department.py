@@ -204,6 +204,29 @@ class DepartmentService(Queryset):
                         'WHERE shtat_department_id= :shtat_department_id )'
         shtatkas = await database.fetch_all(query=shtatka_query, values={'shtat_department_id': shtat_department_id})
         for shtatka in shtatkas:
+            data.append({
+                'id': shtatka.id,
+                'status': shtatka.status,
+                'organization_name': shtatka.name,
+                'organization_tin': shtatka.organization_tin,
+            })
+        return data
+
+    @staticmethod
+    async def client_shtatka_detail(shtat_department_id: int, client_shtatka_id: int):
+        data = []
+        shtatka_query = 'SELECT * FROM client_shtatkas INNER JOIN shtat_organizations ' \
+                        'ON client_shtatkas.parent_id=shtat_organizations.id ' \
+                        'WHERE client_shtatkas.id= :client_shtatka_id and parent_id in (' \
+                        'SELECT organization_id FROM shtat_department_organizations ' \
+                        'WHERE shtat_department_id= :shtat_department_id )'
+        shtatka = await database.fetch_one(
+            query=shtatka_query,
+            values={
+                'shtat_department_id': shtat_department_id,
+                'client_shtatka_id': int(client_shtatka_id)
+            })
+        if shtatka:
             documents = []
             query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id'
             organization_children = await database.fetch_all(query=query, values={'client_shtatka_id': shtatka.id})
@@ -256,7 +279,9 @@ class DepartmentService(Queryset):
                 'organization_tin': shtatka.organization_tin,
                 'documents': documents
             })
-        return data
+            return data
+        else:
+            return {}
 
 
 
