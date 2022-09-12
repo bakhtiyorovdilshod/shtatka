@@ -25,7 +25,6 @@ class DocumentService:
             await database.execute(query='DELETE FROM organization_children where id= :id', values={'id': child.id})
 
     async def create_client_position_department(self, documents, organization_shtatka_id):
-        print(documents)
         for document in documents:
             child = OrganizationChildTable.insert().values(
                 child_name=document.name,
