@@ -50,8 +50,28 @@ class DepartmentService(Queryset):
                 )
                 await database.execute(shtat_department_user)
             for organization_item in organizations:
-                organization_val_query = 'SELECT organization_tin, id FROM shtat_organizations WHERE organization_tin= :organization_tin'
-                result = await database.fetch_one(query=organization_val_query, values={'organization_tin': organization_item.organization_tin})
+                if organization_item.type not in ['with_self', 'with_budget']:
+                    raise HTTPException(status_code=400, detail='type has not been matched')
+                query = 'SELECT shtat_department_organizations.id FROM shtat_department_organizations ' \
+                        'INNER JOIN shtat_organizations ON ' \
+                        'shtat_department_organizations.organization_id=shtat_organizations.id ' \
+                        'WHERE type= :type and shtat_organizations.organization_tin= :organization_tin'
+                organization_other_department = await database.fetch_one(
+                    query=query,
+                    values={
+                        'type': organization_item.type,
+                        'organization_tin': organization_item.organization_tin
+                    }
+                )
+                if organization_other_department:
+                    raise HTTPException(status_code=400, detail='organization has already fixed to another department')
+
+                organization_val_query = 'SELECT organization_tin, id FROM shtat_organizations ' \
+                                         'WHERE organization_tin= :organization_tin'
+                result = await database.fetch_one(
+                    query=organization_val_query,
+                    values={'organization_tin': organization_item.organization_tin}
+                )
                 if not result:
                     organization = OrganizationTable.insert().values(
                         organization_tin=organization_item.organization_tin,
@@ -62,7 +82,8 @@ class DepartmentService(Queryset):
                     organization_id = result.id
                 shtat_department_organization = ShtatDepartmentOrganizationTable.insert().values(
                     shtat_department_id=shtat_department_id,
-                    organization_id=organization_id
+                    organization_id=organization_id,
+                    type=organization_item.type
                 )
                 await database.execute(shtat_department_organization)
 

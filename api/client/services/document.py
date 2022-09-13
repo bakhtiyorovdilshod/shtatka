@@ -64,25 +64,30 @@ class DocumentService:
 
     async def accept_client_documents(self, data: AcceptDocumentSchema):
         async with database.transaction():
+            if data.type not in ['with_self', 'with_budget']:
+                raise HTTPException(status_code=400, detail='type has not been matched')
             query = 'SELECT id FROM shtat_organizations WHERE organization_tin= :organization_tin'
             organization = await database.fetch_one(query=query, values={'organization_tin': data.organization_tin})
             if not organization:
                 raise HTTPException(status_code=400, detail='Access has been denied')
             client_shtatka = await database.fetch_one(
-                query='SELECT id FROM client_shtatkas WHERE parent_id= :parent_id', values={
-                    'parent_id': organization.id
+                query='SELECT id FROM client_shtatkas WHERE parent_id= :parent_id and type= :type', values={
+                    'parent_id': organization.id,
+                    'type': data.type
                 })
             if client_shtatka:
                 await database.execute(query='UPDATE client_shtatkas SET status= :status WHERE parent_id= :parent_id', values={
                     'status': 'pending',
-                    'parent_id': organization.id
+                    'parent_id': organization.id,
+                    'type': data.type
                 })
                 await self.delete_old_position_and_department(client_shtatka=client_shtatka)
                 await self.create_client_position_department(documents=data.documents, client_shtatka_id=client_shtatka.id)
             else:
                 organization_shtatka = ClientShtatkaTable.insert().values(
                     parent_id=organization.id,
-                    status='pending'
+                    status='pending',
+                    type=data.type
                 )
                 client_shtatka_id = await database.execute(organization_shtatka)
                 await self.create_client_position_department(documents=data.documents, client_shtatka_id=client_shtatka_id)

@@ -12,6 +12,7 @@ class UserListCreateSchema(BaseModel):
 class OrganizationListCreateSchema(BaseModel):
     organization_tin: str
     name: str
+    type: str
 
 
 class CreateShtatDepartmentSchema(BaseModel):

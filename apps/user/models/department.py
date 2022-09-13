@@ -1,3 +1,5 @@
+import enum
+
 import sqlalchemy, copy
 from sqlalchemy import func
 
@@ -5,6 +7,12 @@ from apps.user.models.base import base_model
 from apps.user.models import metadata
 
 BASE_FIELDS = base_model()
+
+
+class TypeChoice(enum.Enum):
+    with_self = 'with_self'
+    with_budget = 'with_budget'
+
 
 SHTAT_DEPARTMENT_FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
@@ -17,6 +25,7 @@ SHTAT_DEPARTMENT_ORGANIZATION_FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
     sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id', ondelete="CASCADE"), nullable=False),
     sqlalchemy.Column('organization_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
+    sqlalchemy.Column('type', sqlalchemy.Enum(TypeChoice), nullable=False)
 
 ]
 

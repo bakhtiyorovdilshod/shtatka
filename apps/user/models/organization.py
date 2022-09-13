@@ -21,6 +21,11 @@ class StatusChoice(enum.Enum):
     confirmed = 'confirmed'
 
 
+class TypeChoice(enum.Enum):
+    with_self = 'with_self'
+    with_budget = 'with_budget'
+
+
 FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
     sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
@@ -39,7 +44,8 @@ CLIENT_SHTATKA_FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True),
     sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
     sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
-    sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending')
+    sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending'),
+    sqlalchemy.Column('type', sqlalchemy.Enum(TypeChoice), nullable=False)
 
 ]
 

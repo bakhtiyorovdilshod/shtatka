@@ -37,4 +37,5 @@ class ListDocumentSchema(BaseModel):
 
 class AcceptDocumentSchema(BaseModel):
     organization_tin: str
+    type: str
     documents: List[ListDocumentSchema]
