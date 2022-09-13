@@ -83,4 +83,4 @@ async def get_organization_detail(user: UserDetailSchema = Depends(is_authentica
 
 @router.get('/shtat/user/logout/',  tags=['user'])
 async def user_logout(user: UserDetailSchema = Depends(is_authenticated)):
-    return {'status': 'success'}
+    return {'status': 'success', 'is_shtatka': True}

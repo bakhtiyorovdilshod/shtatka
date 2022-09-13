@@ -112,7 +112,8 @@ class UserService:
 
     @staticmethod
     async def login(data: UserLoginSchema):
-        login_query = 'SELECT username, id, password FROM users WHERE username = :username'
+        login_query = 'SELECT users.username, users.id,users.password, user_roles.name ' \
+                      'FROM users INNER JOIN user_roles ON users.role_id=user_roles.id WHERE username = :username'
         user = await database.fetch_one(query=login_query, values={'username': data.username})
 
         if not user:
@@ -121,7 +122,7 @@ class UserService:
             raise HTTPException(status_code=400, detail='password is in incorrect')
 
         access_token = UserAuthenticationService().create_access_token(user.id)
-        return {'status': 'success', 'access_token': access_token, 'user_id': user.id}
+        return {'status': 'success', 'access_token': access_token, 'user_id': user.id, 'role': user.name}
 
     @staticmethod
     async def shtat_users():
