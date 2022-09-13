@@ -17,7 +17,7 @@ async def create_department(data: CreateShtatDepartmentSchema, user: UserDetailS
 
 
 @router.get('/department/list/',  tags=['department'])
-async def create_department(page: int = 1, page_size: int = 2, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
+async def department_list(page: int = 1, page_size: int = 2, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
     service_result = await DepartmentService().all_for_pagination(page=page, page_size=page_size, request=request)
     return service_result
 
@@ -29,7 +29,7 @@ async def get_organization_detail(id: int):
 
 
 @router.put('/department/{id}/',  tags=['department'])
-async def get_organization_detail(id: int, data: UpdateShtatDepartmentSchema):
+async def edit_department(id: int, data: UpdateShtatDepartmentSchema):
     service_result = await DepartmentService().update_department(data=data, shtat_department_id=id)
     return service_result
 
