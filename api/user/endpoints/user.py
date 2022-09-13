@@ -78,7 +78,7 @@ async def login_user():
 
 @router.get('/shtat/user_me/',  tags=['user'])
 async def get_organization_detail(user: UserDetailSchema = Depends(is_authenticated)):
-    return {'full_name': user.full_name, 'active': user.is_active}
+    return {'full_name': user.full_name, 'active': user.is_active, 'is_shtatka': True}
 
 
 @router.get('/shtat/user/logout/',  tags=['user'])
