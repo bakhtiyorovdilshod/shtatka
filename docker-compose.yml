@@ -34,7 +34,6 @@ services:
     volumes:
       - static_volume:/web/shtatka/staticfiles/
       - media_volume:/web/shtatka/media/
-      - - ./certbot/www:/var/www/certbot/:r
     ports:
       - 80:80
       - 443:443
