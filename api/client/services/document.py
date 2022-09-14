@@ -92,3 +92,8 @@ class DocumentService:
                 client_shtatka_id = await database.execute(organization_shtatka)
                 await self.create_client_position_department(documents=data.documents, client_shtatka_id=client_shtatka_id)
         return {'status': 'success'}
+
+    @staticmethod
+    async def convert_execl():
+        pass
+
