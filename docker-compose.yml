@@ -5,11 +5,11 @@ services:
     build:
         context: .
         dockerfile: Dockerfile
-    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 8001
+    command: uvicorn main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
       - ./shtatka:/usr/src/app
     ports:
-      - 8004:8001
+      - 8004:8000
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
