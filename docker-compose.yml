@@ -14,7 +14,6 @@ services:
       - ENVIRONMENT=dev
       - TESTING=0
       - DATABASE_URL=postgresql://postgres:u1710016@db:5432/shtatka_db
-
     depends_on:
       - db
 
@@ -35,8 +34,7 @@ services:
       - static_volume:/web/shtatka/staticfiles/
       - media_volume:/web/shtatka/media/
     ports:
-      - 80:80
-      - 443:443
+      - 1337:80
     depends_on:
       - web
     links:
