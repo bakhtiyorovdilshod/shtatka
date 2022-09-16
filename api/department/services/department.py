@@ -123,7 +123,8 @@ class DepartmentService(Queryset):
         for organization in organizations:
             organization_list.append({
                 'name': organization.name,
-                'organization_tin': organization.organization_tin
+                'organization_tin': organization.organization_tin,
+                'type': organization.type
             })
         data = {
             'id': shtat_department.id,
