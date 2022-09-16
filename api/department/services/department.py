@@ -187,7 +187,8 @@ class DepartmentService(Queryset):
                     organization_id = result.id
                 shtat_department_organization = ShtatDepartmentOrganizationTable.insert().values(
                     shtat_department_id=shtat_department_id,
-                    organization_id=organization_id
+                    organization_id=organization_id,
+                    type=organization_item.type
                 )
                 await database.execute(shtat_department_organization)
         return {'success'}
