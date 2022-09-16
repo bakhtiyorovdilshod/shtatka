@@ -113,7 +113,7 @@ class DepartmentService(Queryset):
             user_list.append({
                 'id': user.id,
                 'full_name': user.full_name,
-                'role': user.role_id,
+                'role_id': user.role_id,
                 'username': user.username,
                 'pinfl': user.pinfl
             })
