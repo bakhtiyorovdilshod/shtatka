@@ -106,7 +106,7 @@ class DepartmentService(Queryset):
         shtat_department = await database.fetch_one(query=query, values={'department_id': department_id})
         user_list = []
         organization_list = []
-        user_query = 'SELECT users.id, users.role_id, users.full_name FROM shtat_department_users INNER JOIN users ' \
+        user_query = 'SELECT * FROM shtat_department_users INNER JOIN users ' \
                      'ON users.id= shtat_department_users.user_id WHERE shtat_department_users.shtat_department_id= :shtat_department_id'
         users = await database.fetch_all(query=user_query, values={'shtat_department_id': shtat_department.id})
         for user in users:
