@@ -102,7 +102,6 @@ class DepartmentService(Queryset):
 
     @staticmethod
     async def department_detail(department_id: int):
-        data = []
         query = 'SELECT name, code, id FROM shtat_departments WHERE id= :department_id'
         shtat_department = await database.fetch_one(query=query, values={'department_id': department_id})
         user_list = []
@@ -126,13 +125,13 @@ class DepartmentService(Queryset):
                 'name': organization.name,
                 'organization_tin': organization.organization_tin
             })
-        data.append({
+        data = {
             'id': shtat_department.id,
             'name': shtat_department.name,
             'code': shtat_department.code,
             'users': user_list,
             'organizations': organization_list
-        })
+        }
         return data
 
     @staticmethod
