@@ -34,18 +34,19 @@ services:
       - static_volume:/web/shtatka/staticfiles/
       - media_volume:/web/shtatka/media/
     ports:
-      - 1337:80
+      - 80:80
+      - 443:443
     depends_on:
       - web
     links:
       - web:web
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
 
-#  certbot:
-#    image: certbot/certbot:latest
-#    volumes:
-#      - ./certbot/www/:/var/www/certbot/:rw
-#      - ./certbot/conf/:/etc/letsencrypt/:rw
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
 
 volumes:
   postgres_data:
