@@ -5,3 +5,4 @@ COPY nginx.conf /etc/nginx/conf.d
 RUN mkdir -p /etc/nginx/certs/
 COPY fastapicode_com.crt /etc/nginx/certs/fastapicode_com.crt
 COPY fastapicode_com.key /etc/nginx/certs/fastapicode_com.key
+COPY B8D760E74967F777EE5FA72E157587E3.txt /usr/share/nginx/html/.well-known/pki-validation/B8D760E74967F777EE5FA72E157587E3.txt
