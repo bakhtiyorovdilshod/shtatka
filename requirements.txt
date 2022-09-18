@@ -10,6 +10,7 @@ passlib==1.7.4
 python-jose==3.3.0
 python-multipart
 XlsxWriter==3.0.3
+jinja2
 
 
 
