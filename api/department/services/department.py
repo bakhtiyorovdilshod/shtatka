@@ -207,7 +207,7 @@ class DepartmentService(Queryset):
         )
         for shtat_department_user in shtat_department_users:
             await database.execute(
-                query='DELETE FROM users WHERE id= : id',
+                query='DELETE FROM users WHERE id= :id',
                 values={'id': shtat_department_user.user_id}
             )
         delete_user_query = 'DELETE FROM shtat_department_users WHERE shtat_department_id= :shtat_department_id'
