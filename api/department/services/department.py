@@ -201,7 +201,7 @@ class DepartmentService(Queryset):
         delete_department_query = 'DELETE FROM shtat_departments WHERE id= :shtat_department_id'
         await database.execute(query=delete_department_query, values={'shtat_department_id': shtat_department_id})
         shtat_department_users = await database.fetch_all(
-            query='SELECT users.id FROM shtat_department_users INNER JOIN users '
+            query='SELECT * FROM shtat_department_users INNER JOIN users '
                   'ON users.id= shtat_department_users.user_id WHERE shtat_department_id= :shtat_department_id',
             values={'shtat_department_id': shtat_department_id}
         )
