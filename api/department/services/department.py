@@ -197,6 +197,16 @@ class DepartmentService(Queryset):
         return {'success'}
 
     @staticmethod
+    async def delete_department(shtat_department_id: int):
+        delete_department_query = 'DELETE FROM shtat_departments WHERE id= :shtat_department_id'
+        await database.execute(query=delete_department_query, values={'shtat_department_id': shtat_department_id})
+        delete_user_query = 'DELETE FROM shtat_department_users WHERE shtat_department_id= :shtat_department_id'
+        await database.execute(query=delete_user_query, values={'shtat_department_id': shtat_department_id})
+        delete_organization = 'DELETE FROM shtat_department_organizations WHERE shtat_department_id= :shtat_department_id'
+        await database.execute(query=delete_organization, values={'shtat_department_id': shtat_department_id})
+        return {'status': 'success'}
+
+    @staticmethod
     async def department_users(department_id: int):
         data = []
         query = 'SELECT users.id, users.full_name FROM shtat_department_users INNER JOIN users ' \

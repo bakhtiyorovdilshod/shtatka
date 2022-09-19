@@ -34,6 +34,12 @@ async def edit_department(id: int, data: UpdateShtatDepartmentSchema):
     return service_result
 
 
+@router.delete('/department/{id}/', tags=['department'])
+async def delete_department(id: int):
+    status = await DepartmentService().delete_department(shtat_department_id=id)
+    return status
+
+
 @router.get('/department/{id}/list/users/',  tags=['department_users'])
 async def department_users(id: int, user: UserDetailSchema = Depends(is_authenticated)):
     result = await DepartmentService().department_users(department_id=id)
