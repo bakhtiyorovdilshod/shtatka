@@ -199,10 +199,8 @@ class DepartmentService(Queryset):
     @staticmethod
     async def delete_department(shtat_department_id: int):
         delete_department_query = 'DELETE FROM shtat_departments WHERE id= :shtat_department_id'
-        await database.execute(query=delete_department_query, values={'shtat_department_id': shtat_department_id})
         shtat_department_users = await database.fetch_all(
-            query='SELECT * FROM shtat_department_users INNER JOIN users '
-                  'ON users.id= shtat_department_users.user_id WHERE shtat_department_id= :shtat_department_id',
+            query='SELECT * FROM shtat_department_users  WHERE shtat_department_id= :shtat_department_id',
             values={'shtat_department_id': shtat_department_id}
         )
         for shtat_department_user in shtat_department_users:
@@ -210,6 +208,7 @@ class DepartmentService(Queryset):
                 query='DELETE FROM users WHERE id= :id',
                 values={'id': shtat_department_user.user_id}
             )
+        await database.execute(query=delete_department_query, values={'shtat_department_id': shtat_department_id})
         delete_user_query = 'DELETE FROM shtat_department_users WHERE shtat_department_id= :shtat_department_id'
         await database.execute(query=delete_user_query, values={'shtat_department_id': shtat_department_id})
         delete_organization = 'DELETE FROM shtat_department_organizations WHERE shtat_department_id= :shtat_department_id'
