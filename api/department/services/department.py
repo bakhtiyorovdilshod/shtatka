@@ -35,6 +35,7 @@ class DepartmentService(Queryset):
                         role_id=user_item.role_id,
                         username=user_item.username,
                         password=pbkdf2_sha256.hash('test_password'),
+                        is_active=True
                     )
                     user_id = await database.execute(user)
                 else:
@@ -163,6 +164,7 @@ class DepartmentService(Queryset):
                         role_id=user_item.role_id,
                         username=user_item.username,
                         password=pbkdf2_sha256.hash('test_password'),
+                        is_active=True
                     )
                     user_id = await database.execute(user)
                 else:

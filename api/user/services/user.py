@@ -127,7 +127,7 @@ class UserService:
     @staticmethod
     async def shtat_users():
         data = []
-        query = 'SELECT users.id, users.full_name, user_roles.name, users.is_active FROM users INNER JOIN user_roles ON users.role_id = user_roles.id'
+        query = 'SELECT users.id, users.full_name, user_roles.name, users.is_active, users.username FROM users INNER JOIN user_roles ON users.role_id = user_roles.id'
         users = await database.fetch_all(query=query, values={})
         for user in users:
             department = None
@@ -144,6 +144,7 @@ class UserService:
                 'full_name': user.full_name,
                 'role': user.name,
                 'is_active': user.is_active,
+                'username': user.username,
                 'department': department
             })
         return data
