@@ -112,7 +112,7 @@ class UserService:
 
     @staticmethod
     async def login(data: UserLoginSchema):
-        login_query = 'SELECT users.username, users.id,users.password, user_roles.name ' \
+        login_query = 'SELECT users.username, users.id,users.password, user_roles.name, users.is_active ' \
                       'FROM users INNER JOIN user_roles ON users.role_id=user_roles.id WHERE username = :username'
         user = await database.fetch_one(query=login_query, values={'username': data.username})
 
@@ -120,6 +120,9 @@ class UserService:
             raise HTTPException(status_code=400, detail='username is in incorrect')
         if not pbkdf2_sha256.verify(data.password, user.password):
             raise HTTPException(status_code=400, detail='password is in incorrect')
+
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail='user is not active')
 
         access_token = UserAuthenticationService().create_access_token(user.id)
         return {'status': 'success', 'access_token': access_token, 'user_id': user.id, 'role': user.name}
