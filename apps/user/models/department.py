@@ -32,7 +32,7 @@ SHTAT_DEPARTMENT_ORGANIZATION_FIELDS = [
 
 SHTAT_DEPARTMENT_USER_FIELDS = [
     sqlalchemy.Column('id', sqlalchemy.INTEGER, primary_key=True, autoincrement=True),
-    sqlalchemy.Column('user_id', sqlalchemy.ForeignKey('users.id'), nullable=False),
+    sqlalchemy.Column('user_id', sqlalchemy.ForeignKey('users.id', ondelete="CASCADE"), nullable=False),
     sqlalchemy.Column('shtat_department_id', sqlalchemy.ForeignKey('shtat_departments.id', ondelete="CASCADE"), nullable=False),
 
 ]
