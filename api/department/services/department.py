@@ -1,7 +1,10 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
+from xlsxwriter import Workbook
 
 from api.department.schemas.department import CreateShtatDepartmentSchema, UpdateShtatDepartmentSchema
+from api.user.schemas.user import UserDetailSchema
+from api.user.services.auth import is_authenticated
 from api.user.utils.queryset import Queryset
 from apps.user.models import ShtatDepartmentTable, ShtatDepartmentUser, UserTable, OrganizationTable, \
     ShtatDepartmentOrganizationTable
@@ -240,93 +243,142 @@ class DepartmentService(Queryset):
         return data
 
     @staticmethod
-    async def client_shtatka_list(shtat_department_id: int):
+    async def client_shtatka_list(user: UserDetailSchema = Depends(is_authenticated)):
         data = []
-        shtatka_query = 'SELECT * FROM client_shtatkas INNER JOIN shtat_organizations ' \
-                        'ON client_shtatkas.parent_id=shtat_organizations.id ' \
-                        'WHERE parent_id in (' \
-                        'SELECT organization_id FROM shtat_department_organizations ' \
-                        'WHERE shtat_department_id= :shtat_department_id )'
-        shtatkas = await database.fetch_all(query=shtatka_query, values={'shtat_department_id': shtat_department_id})
-        for shtatka in shtatkas:
-            data.append({
-                'id': shtatka.id,
-                'status': shtatka.status,
-                'organization_name': shtatka.name,
-                'organization_tin': shtatka.organization_tin,
-            })
+        query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
+        shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
+        if shtat_department:
+            shtat_department_id = shtat_department.shtat_department_id
+            shtatka_query = 'SELECT  cl.id, cl.status,shto.name, shto.organization_tin ' \
+                            'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
+                            'ON cl.parent_id=shto.id ' \
+                            'WHERE parent_id in (' \
+                            'SELECT organization_id FROM shtat_department_organizations ' \
+                            'WHERE shtat_department_id= :shtat_department_id)'
+            shtatkas = await database.fetch_all(query=shtatka_query, values={'shtat_department_id': shtat_department_id})
+            for shtatka in shtatkas:
+                data.append({
+                    'id': shtatka.id,
+                    'status': shtatka.status,
+                    'organization_name': shtatka.name,
+                    'organization_tin': shtatka.organization_tin,
+                })
         return data
 
-    @staticmethod
-    async def client_shtatka_detail(shtat_department_id: int, client_shtatka_id: int):
-        data = []
-        shtatka_query = 'SELECT * FROM client_shtatkas INNER JOIN shtat_organizations ' \
-                        'ON client_shtatkas.parent_id=shtat_organizations.id ' \
-                        'WHERE client_shtatkas.id= :client_shtatka_id and parent_id in (' \
-                        'SELECT organization_id FROM shtat_department_organizations ' \
-                        'WHERE shtat_department_id= :shtat_department_id )'
-        shtatka = await database.fetch_one(
-            query=shtatka_query,
-            values={
-                'shtat_department_id': shtat_department_id,
-                'client_shtatka_id': int(client_shtatka_id)
-            })
-        if shtatka:
-            documents = []
-            query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id'
-            organization_children = await database.fetch_all(query=query, values={'client_shtatka_id': shtatka.id})
-            for child in organization_children:
-                department_list = []
-                department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
-                departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
-                for department in departments:
-                    position_list = []
-                    positions = await database.fetch_all(query='SELECT * FROM client_department_positions '
-                                                               'WHERE client_department_id= :client_department_id',
-                                                         values={
-                                                             'client_department_id': department.id
-                                                         })
-                    for position in positions:
-                        position_list.append({
-                            'name': position.name,
-                            'base_salary': position.base_salary,
-                            'count': position.count,
-                            'bonus_salary': position.bonus_salary,
-                            'minimal_salary': position.minimal_salary,
-                            'other_bonus_salary': position.other_bonus_salary,
-                            'razryad_coefficient': position.razryad_coefficient,
-                            'razryad_value': position.razryad_value,
-                            'razryad_subtract': position.razryad_subtract,
-                            'right_coefficient': position.right_coefficient
-                        })
-                    department_list.append({
-                        'name': department.name,
-                        'positions': position_list,
-                        'total_count': department.total_count,
-                        'total_minimal_salary': department.total_minimal_salary,
-                        'total_bonus_salary': department.total_bonus_salary,
-                        'total_base_salary': department.total_base_salary,
 
-                    })
-                documents.append({
-                    'name': child.child_name,
-                    'address': child.address,
-                    'chapter_code': child.chapter_code,
-                    'department_code': child.department_code,
-                    'small_department_code': child.small_department_code,
-                    'is_main': child.is_main,
-                    'departments': department_list
+    @staticmethod
+    async def client_shtatka_detail(client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated)):
+        data = []
+        query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
+        shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
+        if shtat_department:
+            shtatka_query = 'SELECT cl.id, cl.status,shto.name, shto.organization_tin, cl.parent_id ' \
+                            'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
+                            'ON cl.parent_id=shto.id ' \
+                            'WHERE cl.id= :client_shtatka_id and ' \
+                            'parent_id in (SELECT organization_id FROM shtat_department_organizations ' \
+                            'WHERE shtat_department_id= :shtat_department_id)'
+            shtatka = await database.fetch_one(
+                query=shtatka_query,
+                values={
+                    'client_shtatka_id': int(client_shtatka_id),
+                    'shtat_department_id': shtat_department.shtat_department_id
                 })
-            data.append({
-                'id': shtatka.id,
-                'status': shtatka.status,
-                'organization_name': shtatka.name,
-                'organization_tin': shtatka.organization_tin,
-                'documents': documents
-            })
-            return data
-        else:
-            return {}
+            if shtatka:
+                documents = []
+                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id'
+                organization_children = await database.fetch_all(query=query, values={'client_shtatka_id': shtatka.id})
+                for child in organization_children:
+                    department_list = []
+                    department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
+                    departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
+                    for department in departments:
+                        position_list = []
+                        positions = await database.fetch_all(query='SELECT * FROM client_department_positions '
+                                                                   'WHERE client_department_id= :client_department_id',
+                                                             values={
+                                                                 'client_department_id': department.id
+                                                             })
+                        for position in positions:
+                            position_list.append({
+                                'name': position.name,
+                                'base_salary': position.base_salary,
+                                'count': position.count,
+                                'bonus_salary': position.bonus_salary,
+                                'minimal_salary': position.minimal_salary,
+                                'other_bonus_salary': position.other_bonus_salary,
+                                'razryad_coefficient': position.razryad_coefficient,
+                                'razryad_value': position.razryad_value,
+                                'razryad_subtract': position.razryad_subtract,
+                                'right_coefficient': position.right_coefficient
+                            })
+                        department_list.append({
+                            'name': department.name,
+                            'positions': position_list,
+                            'total_count': department.total_count,
+                            'total_minimal_salary': department.total_minimal_salary,
+                            'total_bonus_salary': department.total_bonus_salary,
+                            'total_base_salary': department.total_base_salary,
+
+                        })
+                    documents.append({
+                        'name': child.child_name,
+                        'address': child.address,
+                        'chapter_code': child.chapter_code,
+                        'department_code': child.department_code,
+                        'small_department_code': child.small_department_code,
+                        'is_main': child.is_main,
+                        'departments': department_list
+                    })
+                data.append({
+                    'id': shtatka.id,
+                    'status': shtatka.status,
+                    'organization_name': shtatka.name,
+                    'organization_tin': shtatka.organization_tin,
+                    'documents': documents
+                })
+                return data
+            else:
+                return {}
+        return {'error': 1}
+
+    @staticmethod
+    async def convert_execl():
+        workbook = Workbook('shtatka.xlsx')
+        worksheet = workbook.add_worksheet()
+        cell = workbook.add_format({'color': 'black', 'font_size': 12, 'align': 'center', 'bold': 1, 'border': 1})
+        cell_value = workbook.add_format({'color': 'black', 'font_size': 9, 'align': 'center', 'bold': 1})
+        cell_two = workbook.add_format({'align': 'center', 'color': 'black', 'font_size': 10})
+        worksheet.set_column('A:D', 12)
+        worksheet.set_row(3, 30)
+        worksheet.set_row(6, 30)
+        worksheet.set_row(7, 30)
+        worksheet.merge_range('A2:H2', 'ШТАТЛАР ЖАДВАЛИ', cell)
+        worksheet.merge_range('A3:H3', '01.01.2022-yil', cell)
+        worksheet.set_column('A:A', 50)
+        worksheet.write('A4', 'Tashkilotning to\'liq nomi: ', cell_value)
+        worksheet.set_column('B:H', 15)
+        worksheet.merge_range('B4:H4', 'Oʼzbekiston Respublikasi Moliya vazirligi huzuridagi byudjetdan tashqari Pensiya jamgʼarmasi Ijro etuvchi apparati', cell_value)
+        worksheet.write('A5', 'Toʼliq manzili:', cell_value)
+        worksheet.merge_range('B5:H5', 'Toshkent sh. Mustaqillik maydoni',
+                              cell_value)
+        worksheet.write('A6', 'Byudjet darajasi:', cell_value)
+        worksheet.merge_range('B6:C6', 'Respublika byudjeti',
+                              cell_value)
+        worksheet.write('A7', 'Boʼlim:', cell_value)
+        worksheet.write('B7', '7102',
+                              cell_value)
+        worksheet.write('A8', 'Kichik boʼlim:', cell_value)
+        worksheet.write('B8', '200',
+                        cell_value)
+
+        worksheet.write('A9', 'Bob:', cell_value)
+        worksheet.write('B9', '037',
+                        cell_value)
+
+        worksheet.write('A11', '')
+
+        workbook.close()
 
 
 

@@ -46,15 +46,24 @@ async def department_users(id: int, user: UserDetailSchema = Depends(is_authenti
     return result
 
 
-@router.get('/department/{department_id}/sent_shtatka/',  tags=['sent_shtatka'])
-async def department_users(department_id: int, user: UserDetailSchema = Depends(is_authenticated)):
-    result = await DepartmentService().client_shtatka_list(shtat_department_id=department_id)
+@router.get('/departments/sent_shtatka/',  tags=['sent_shtatka'])
+async def department_shtatka(user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().client_shtatka_list(user=user)
     return result
 
 
-@router.get('/department/{department_id}/sent_shtatka/{client_shtatka_id}/',  tags=['sent_shtatka'])
-async def department_users(department_id: int, client_shtatka_id, user: UserDetailSchema = Depends(is_authenticated)):
-    result = await DepartmentService().client_shtatka_detail(shtat_department_id=department_id, client_shtatka_id=client_shtatka_id)
+@router.get('/departments/sent_shtatka/{client_shtatka_id}/',  tags=['sent_shtatka'])
+async def department_users(client_shtatka_id, user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user)
     return result
+
+
+@router.get('/departments/sent_shtatka/{client_shtatka_id}/get_excel/',  tags=['sent_shtatka'])
+async def department_users(client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().convert_execl()
+    return result
+
+
+
 
 

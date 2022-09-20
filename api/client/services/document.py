@@ -4,8 +4,9 @@ from fastapi import HTTPException
 
 from api.client.schemas.document import AcceptDocumentSchema
 from apps.user.models import OrganizationChildTable, ClientDepartmentTable, ClientDepartmentPositionTable
-from apps.user.models.organization import  ClientShtatkaTable
+from apps.user.models.organization import ClientShtatkaTable
 from core.settings import database
+from xlsxwriter import Workbook
 
 
 class DocumentService:
@@ -93,7 +94,4 @@ class DocumentService:
                 await self.create_client_position_department(documents=data.documents, client_shtatka_id=client_shtatka_id)
         return {'status': 'success'}
 
-    @staticmethod
-    async def convert_execl():
-        pass
 
