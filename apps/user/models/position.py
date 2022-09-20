@@ -10,7 +10,7 @@ BASE_FIELDS = base_model()
 CLIENT_DEPARTMENT_POSITION_FIELDS = [
     *BASE_FIELDS,
     sqlalchemy.Column('name', sqlalchemy.String(255), nullable=False),
-    sqlalchemy.Column('count', sqlalchemy.INTEGER, nullable=False),
+    sqlalchemy.Column('position_count', sqlalchemy.INTEGER, nullable=False),
     sqlalchemy.Column('base_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),
     sqlalchemy.Column('bonus_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),
     sqlalchemy.Column('minimal_salary', sqlalchemy.DECIMAL(15, 2), nullable=False),

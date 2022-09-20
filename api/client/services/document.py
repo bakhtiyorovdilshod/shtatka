@@ -50,7 +50,7 @@ class DocumentService:
                 for position in department.positions:
                     department_position = ClientDepartmentPositionTable.insert().values(
                         name=position.name,
-                        count=position.count,
+                        position_count=position.position_count,
                         base_salary=position.base_salary,
                         bonus_salary=position.bonus_salary,
                         minimal_salary=position.minimal_salary,
@@ -77,7 +77,7 @@ class DocumentService:
                     'type': data.type
                 })
             if client_shtatka:
-                await database.execute(query='UPDATE client_shtatkas SET status= :status WHERE parent_id= :parent_id', values={
+                await database.execute(query='UPDATE client_shtatkas SET status= :status, type= :type WHERE parent_id= :parent_id', values={
                     'status': 'pending',
                     'parent_id': organization.id,
                     'type': data.type

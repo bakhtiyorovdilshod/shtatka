@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from fastapi import HTTPException, Depends
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from xlsxwriter import Workbook
@@ -294,16 +296,23 @@ class DepartmentService(Queryset):
                     departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
                     for department in departments:
                         position_list = []
-                        positions = await database.fetch_all(query='SELECT * FROM client_department_positions '
+                        positions = await database.fetch_all(query='SELECT cdp.name, cdp.base_salary, cdp.position_count, '
+                                                                   'cdp.bonus_salary,cdp.minimal_salary,'
+                                                                   'cdp.other_bonus_salary, cdp.razryad_coefficient,'
+                                                                   'cdp.razryad_value, cdp.razryad_subtract,'
+                                                                   'cdp.right_coefficient '
+                                                                   'FROM client_department_positions as cdp '
                                                                    'WHERE client_department_id= :client_department_id',
                                                              values={
                                                                  'client_department_id': department.id
                                                              })
                         for position in positions:
+                            print(position.position_count)
+                            print(position.name)
                             position_list.append({
                                 'name': position.name,
                                 'base_salary': position.base_salary,
-                                'count': position.count,
+                                'position_count': position.position_count,
                                 'bonus_salary': position.bonus_salary,
                                 'minimal_salary': position.minimal_salary,
                                 'other_bonus_salary': position.other_bonus_salary,
@@ -322,6 +331,7 @@ class DepartmentService(Queryset):
 
                         })
                     documents.append({
+                        'id': child.id,
                         'name': child.child_name,
                         'address': child.address,
                         'chapter_code': child.chapter_code,
@@ -343,42 +353,79 @@ class DepartmentService(Queryset):
         return {'error': 1}
 
     @staticmethod
-    async def convert_execl():
-        workbook = Workbook('shtatka.xlsx')
-        worksheet = workbook.add_worksheet()
-        cell = workbook.add_format({'color': 'black', 'font_size': 12, 'align': 'center', 'bold': 1, 'border': 1})
-        cell_value = workbook.add_format({'color': 'black', 'font_size': 9, 'align': 'center', 'bold': 1})
-        cell_two = workbook.add_format({'align': 'center', 'color': 'black', 'font_size': 10})
-        worksheet.set_column('A:D', 12)
-        worksheet.set_row(3, 30)
-        worksheet.set_row(6, 30)
-        worksheet.set_row(7, 30)
-        worksheet.merge_range('A2:H2', 'ШТАТЛАР ЖАДВАЛИ', cell)
-        worksheet.merge_range('A3:H3', '01.01.2022-yil', cell)
-        worksheet.set_column('A:A', 50)
-        worksheet.write('A4', 'Tashkilotning to\'liq nomi: ', cell_value)
-        worksheet.set_column('B:H', 15)
-        worksheet.merge_range('B4:H4', 'Oʼzbekiston Respublikasi Moliya vazirligi huzuridagi byudjetdan tashqari Pensiya jamgʼarmasi Ijro etuvchi apparati', cell_value)
-        worksheet.write('A5', 'Toʼliq manzili:', cell_value)
-        worksheet.merge_range('B5:H5', 'Toshkent sh. Mustaqillik maydoni',
-                              cell_value)
-        worksheet.write('A6', 'Byudjet darajasi:', cell_value)
-        worksheet.merge_range('B6:C6', 'Respublika byudjeti',
-                              cell_value)
-        worksheet.write('A7', 'Boʼlim:', cell_value)
-        worksheet.write('B7', '7102',
-                              cell_value)
-        worksheet.write('A8', 'Kichik boʼlim:', cell_value)
-        worksheet.write('B8', '200',
-                        cell_value)
+    async def convert_execl(child_shtatka_id: int):
+        query = 'SELECT * FROM organization_children WHERE id= :id'
+        organization_child = await database.fetch_one(query=query, values={'id': child_shtatka_id})
+        if organization_child:
+            output = BytesIO()
+            workbook = Workbook(output)
+            worksheet = workbook.add_worksheet()
+            cell = workbook.add_format({'color': 'black', 'font_size': 12, 'align': 'center', 'bold': 1, 'border': 1})
+            cell_value = workbook.add_format({'color': 'black', 'font_size': 9, 'align': 'center', 'bold': 1})
+            cell_menu = workbook.add_format({'color': 'black', 'font_size': 12, 'align': 'center', 'bold': 1, 'border': 1})
+            worksheet.set_column('A:D', 12)
+            worksheet.set_row(3, 30)
+            worksheet.set_row(6, 30)
+            worksheet.set_row(7, 30)
+            worksheet.merge_range('A2:H2', 'ШТАТЛАР ЖАДВАЛИ', cell)
+            worksheet.merge_range('A3:H3', '01.01.2022-yil', cell)
+            worksheet.set_column('A:A', 40)
+            worksheet.write('A4', 'Tashkilotning to\'liq nomi: ', cell_value)
+            worksheet.set_column('B:I', 18)
+            worksheet.merge_range('B4:H4', organization_child.child_name, cell_value)
+            worksheet.write('A5', 'Toʼliq manzili:', cell_value)
+            worksheet.merge_range('B5:H5', organization_child.address,
+                                  cell_value)
+            worksheet.write('A6', 'Byudjet darajasi:', cell_value)
+            worksheet.merge_range('B6:C6', 'Respublika byudjeti',
+                                  cell_value)
+            worksheet.write('A7', 'Boʼlim:', cell_value)
+            worksheet.write('B7', organization_child.chapter_code,
+                                  cell_value)
+            worksheet.write('A8', 'Kichik boʼlim:', cell_value)
+            worksheet.write('B8', organization_child.department_code,
+                            cell_value)
 
-        worksheet.write('A9', 'Bob:', cell_value)
-        worksheet.write('B9', '037',
-                        cell_value)
+            worksheet.write('A9', 'Bob:', cell_value)
+            worksheet.write('B9', organization_child.small_department_code,
+                            cell_value)
 
-        worksheet.write('A11', '')
+            worksheet.set_row(10, 35)
+            worksheet.write('A11', 'LАVOZIM', cell_menu)
+            worksheet.write('B11', 'Shtat birlik-lari \nsoni', cell_menu)
+            worksheet.write('C11', 'YaTS boʼyicha \nrazryad', cell_menu)
+            worksheet.write('D11', 'Tarif koeffitsent', cell_menu)
+            worksheet.write('E11', 'To\'g\'irlovchi \nkoeffitsent', cell_menu)
+            worksheet.write('F11', 'Lavozimi boʼyicha \noylik ish xaqi', cell_menu)
+            worksheet.write('G11', 'Ragʼbatlan-tirish \nkoeffitsent', cell_menu)
+            worksheet.write('H11', 'Boshqa ustamalar', cell_menu)
+            worksheet.write('I11', 'Jami ish xaqi', cell_menu)
+            row = 11
+            department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
+            departments = await database.fetch_all(query=department_query, values={'child_id': organization_child.id})
+            for department in departments:
+                row_item = row + 1
+                worksheet.merge_range(row, 0, row, 8, department.name, cell_menu)
+                positions = await database.fetch_all(query='SELECT * FROM client_department_positions '
+                                                           'WHERE client_department_id= :client_department_id',
+                                                     values={
+                                                         'client_department_id': department.id
+                                                     })
+                for position in positions:
+                    worksheet.write(row_item, 0, position.name, cell_value)
+                    worksheet.write(row_item, 1, position.position_count, cell_value)
+                    worksheet.write(row_item, 2, position.razryad_value, cell_value)
+                    worksheet.write(row_item, 3, position.razryad_coefficient, cell_value)
+                    worksheet.write(row_item, 4, position.right_coefficient, cell_value)
+                    worksheet.write(row_item, 5, position.minimal_salary, cell_value)
+                    worksheet.write(row_item, 6, position.bonus_salary, cell_value)
+                    worksheet.write(row_item, 7, position.base_salary, cell_value)
+                    row_item += 1
+                row = row_item + 1
 
-        workbook.close()
+            workbook.close()
+            output.seek(0)
+            return output
 
 
 

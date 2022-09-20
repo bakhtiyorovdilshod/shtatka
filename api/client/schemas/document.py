@@ -7,7 +7,7 @@ class ListPositionSchema(BaseModel):
     name: str
     base_salary: int
     bonus_salary: int
-    count: int
+    position_count: int
     minimal_salary: int
     other_bonus_salary: int
     razryad_coefficient: int
