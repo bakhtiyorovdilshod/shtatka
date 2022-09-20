@@ -41,9 +41,9 @@ async def delete_department(id: int):
     return status
 
 
-@router.get('/department/{id}/list/users/',  tags=['department_users'])
-async def department_users(id: int, user: UserDetailSchema = Depends(is_authenticated)):
-    result = await DepartmentService().department_users(department_id=id)
+@router.get('/department/list/users/',  tags=['department_users'])
+async def department_users(user: UserDetailSchema = Depends(is_authenticated)):
+    result = await DepartmentService().department_users(user=user)
     return result
 
 
