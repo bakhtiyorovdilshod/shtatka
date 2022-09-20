@@ -10,10 +10,10 @@ class ListPositionSchema(BaseModel):
     position_count: int
     minimal_salary: int
     other_bonus_salary: int
-    razryad_coefficient: int
+    razryad_coefficient: float
     razryad_subtract: int
     razryad_value: int
-    right_coefficient: int
+    right_coefficient: float
 
 
 class ListDepartmentSchema(BaseModel):

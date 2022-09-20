@@ -130,6 +130,7 @@ class DepartmentService(Queryset):
         organizations = await database.fetch_all(query=organ_query, values={'shtat_department_id': shtat_department.id})
         for organization in organizations:
             organization_list.append({
+                'id': organization.organization_id,
                 'name': organization.name,
                 'organization_tin': organization.organization_tin,
                 'type': organization.type
@@ -419,7 +420,7 @@ class DepartmentService(Queryset):
                     worksheet.write(row_item, 4, position.right_coefficient, cell_value)
                     worksheet.write(row_item, 5, position.minimal_salary, cell_value)
                     worksheet.write(row_item, 6, position.bonus_salary, cell_value)
-                    worksheet.write(row_item, 7, position.base_salary, cell_value)
+                    worksheet.write(row_item, 8, position.base_salary, cell_value)
                     row_item += 1
                 row = row_item + 1
 
