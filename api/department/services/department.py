@@ -308,8 +308,6 @@ class DepartmentService(Queryset):
                                                                  'client_department_id': department.id
                                                              })
                         for position in positions:
-                            print(position.position_count)
-                            print(position.name)
                             position_list.append({
                                 'name': position.name,
                                 'base_salary': position.base_salary,
@@ -422,8 +420,13 @@ class DepartmentService(Queryset):
                     worksheet.write(row_item, 6, position.bonus_salary, cell_value)
                     worksheet.write(row_item, 8, position.base_salary, cell_value)
                     row_item += 1
+                worksheet.write(row_item, 1, department.total_count, cell_value)
+                worksheet.write(row_item, 2, 'x', cell_value)
+                worksheet.write(row_item, 3, 'x', cell_value)
+                worksheet.write(row_item, 5, department.total_minimal_salary, cell_value)
+                worksheet.write(row_item, 6, department.total_bonus_salary, cell_value)
+                worksheet.write(row_item, 8, department.total_base_salary, cell_value)
                 row = row_item + 1
-
             workbook.close()
             output.seek(0)
             return output
