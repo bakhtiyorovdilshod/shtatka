@@ -5,11 +5,11 @@ from typing import List
 
 class ListPositionSchema(BaseModel):
     name: str
-    base_salary: int
-    bonus_salary: int
+    base_salary: float
+    bonus_salary: float
     position_count: int
-    minimal_salary: int
-    other_bonus_salary: int
+    minimal_salary: float
+    other_bonus_salary: float
     razryad_coefficient: float
     razryad_subtract: int
     razryad_value: int

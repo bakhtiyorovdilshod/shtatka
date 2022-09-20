@@ -11,6 +11,7 @@ from api.user.utils.queryset import Queryset
 from apps.user.models import ShtatDepartmentTable, ShtatDepartmentUser, UserTable, OrganizationTable, \
     ShtatDepartmentOrganizationTable
 from core.settings import database
+import locale
 
 
 class DepartmentService(Queryset):
@@ -411,21 +412,27 @@ class DepartmentService(Queryset):
                                                          'client_department_id': department.id
                                                      })
                 for position in positions:
+                    minimal_salary = '{:20,.2f}'.format(position.minimal_salary)
+                    bonus_salary = '{:20,.2f}'.format(position.bonus_salary)
+                    base_salary = '{:20,.2f}'.format(position.base_salary)
                     worksheet.write(row_item, 0, position.name, cell_value)
                     worksheet.write(row_item, 1, position.position_count, cell_value)
                     worksheet.write(row_item, 2, position.razryad_value, cell_value)
                     worksheet.write(row_item, 3, position.razryad_coefficient, cell_value)
                     worksheet.write(row_item, 4, position.right_coefficient, cell_value)
-                    worksheet.write(row_item, 5, position.minimal_salary, cell_value)
-                    worksheet.write(row_item, 6, position.bonus_salary, cell_value)
-                    worksheet.write(row_item, 8, position.base_salary, cell_value)
+                    worksheet.write(row_item, 5, minimal_salary, cell_value)
+                    worksheet.write(row_item, 6, bonus_salary, cell_value)
+                    worksheet.write(row_item, 8, base_salary, cell_value)
                     row_item += 1
+                total_minimal_salary = '{:20,.2f}'.format(department.total_minimal_salary)
+                total_bonus_salary = '{:20,.2f}'.format(department.total_bonus_salary)
+                total_base_salary = '{:20,.2f}'.format(department.total_base_salary)
                 worksheet.write(row_item, 1, department.total_count, cell_value)
                 worksheet.write(row_item, 2, 'x', cell_value)
                 worksheet.write(row_item, 3, 'x', cell_value)
-                worksheet.write(row_item, 5, department.total_minimal_salary, cell_value)
-                worksheet.write(row_item, 6, department.total_bonus_salary, cell_value)
-                worksheet.write(row_item, 8, department.total_base_salary, cell_value)
+                worksheet.write(row_item, 5, total_minimal_salary, cell_value)
+                worksheet.write(row_item, 6, total_bonus_salary, cell_value)
+                worksheet.write(row_item, 8, total_base_salary, cell_value)
                 row = row_item + 1
             workbook.close()
             output.seek(0)
