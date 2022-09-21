@@ -31,7 +31,7 @@ class UserService:
         url = f'https://hr.mf.uz/api/v1/shtat/organization/?search={name}'
         response = requests.get(url=url, headers=headers, verify=False)
         if response.status_code == 200:
-            return fix_pagination(data=response.json(), domain_name=domain_name)
+            return response.json()
         return []
 
     @staticmethod
