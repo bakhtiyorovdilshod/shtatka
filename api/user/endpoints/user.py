@@ -33,8 +33,8 @@ async def search_user(search: Optional[str] = None, user: UserDetailSchema = Dep
 
 
 @router.get('/shtat/organization/',  tags=['user'])
-async def organizations(page: int = 1, page_size: int = 10, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
-    return await UserService().get_organizations(page=page, page_size=page_size, domain_name=request.url._url)
+async def organizations(search: Optional[str] = None, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
+    return await UserService().get_organizations(domain_name=request.url._url, name=search)
 
 
 @router.get('/shtat/organization/{id}/',  tags=['user'])

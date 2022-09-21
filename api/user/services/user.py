@@ -24,11 +24,11 @@ class UserService:
         return []
 
     @staticmethod
-    async def get_organizations(page: int, page_size: int, domain_name: str):
+    async def get_organizations(domain_name: str, name: Optional[str] = None):
         headers = {
             'content-type': 'application/json; charset=utf8'
         }
-        url = f'https://hr.mf.uz/api/v1/shtat/organization/?page={page}&page_size={page_size}'
+        url = f'https://hr.mf.uz/api/v1/shtat/organization/?search={name}'
         response = requests.get(url=url, headers=headers, verify=False)
         if response.status_code == 200:
             return fix_pagination(data=response.json(), domain_name=domain_name)
