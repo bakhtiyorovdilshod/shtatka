@@ -37,6 +37,11 @@ async def organizations(search: Optional[str] = None, request: Request = None, u
     return await UserService().get_organizations(domain_name=request.url._url, name=search)
 
 
+@router.get('/shtat/organizations/',  tags=['user'])
+async def organizations(page: int = 1, page_size: int = 2, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
+    return await UserService().all_for_pagination(page=page, page_size=page_size, request=request)
+
+
 @router.get('/shtat/organization/{id}/',  tags=['user'])
 async def get_organization_detail(id: int, user: UserDetailSchema = Depends(is_authenticated)):
     return await UserService().get_detail_organization(organization_id=id)
@@ -77,7 +82,7 @@ async def login_user():
 
 
 @router.get('/shtat/user_me/',  tags=['user'])
-async def get_organization_detail(user: UserDetailSchema = Depends(is_authenticated)):
+async def get_user_detail(user: UserDetailSchema = Depends(is_authenticated)):
     role_name = None
     role = await database.fetch_one(query='SELECT name FROM user_roles WHERE id= :role_id', values={'role_id': user.role_id})
     if role:

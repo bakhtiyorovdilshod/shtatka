@@ -7,11 +7,14 @@ from passlib.hash import pbkdf2_sha256
 from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema
 from api.user.services.auth import UserAuthenticationService
 from api.user.utils.page import fix_pagination
-from apps.user.models import UserRoleTable, UserTable
+from api.user.utils.queryset import Queryset
+from apps.user.models import UserRoleTable, UserTable, OrganizationTable
 from core.settings import database
 
 
-class UserService:
+class UserService(Queryset):
+    model = OrganizationTable
+
     @staticmethod
     async def search_user(name: Optional[str] = None):
         headers = {
@@ -33,6 +36,11 @@ class UserService:
         if response.status_code == 200:
             return response.json()
         return []
+    @staticmethod
+    async def get_shtat_organizations():
+        query = 'SELECT * FROM shtat_organizations'
+        organizations = await database.fetch_all(query=query, values={})
+
 
     @staticmethod
     async def get_detail_organization(organization_id: int):
