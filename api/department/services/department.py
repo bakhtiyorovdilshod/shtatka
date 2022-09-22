@@ -340,14 +340,7 @@ class DepartmentService(Queryset):
                         'is_main': child.is_main,
                         'departments': department_list
                     })
-                data.append({
-                    'id': shtatka.id,
-                    'status': shtatka.status,
-                    'organization_name': shtatka.name,
-                    'organization_tin': shtatka.organization_tin,
-                    'documents': documents
-                })
-                return data
+                return documents
             else:
                 return {}
         return {'error': 1}
