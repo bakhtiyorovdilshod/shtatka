@@ -297,7 +297,7 @@ class DepartmentService(Queryset):
                     departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
                     for department in departments:
                         position_list = []
-                        positions = await database.fetch_all(query='SELECT cdp.name, cdp.base_salary, cdp.position_count, '
+                        positions = await database.fetch_all(query='SELECT cdp.id, cdp.name, cdp.base_salary, cdp.position_count, '
                                                                    'cdp.bonus_salary,cdp.minimal_salary,'
                                                                    'cdp.other_bonus_salary, cdp.razryad_coefficient,'
                                                                    'cdp.razryad_value, cdp.razryad_subtract,'
@@ -309,6 +309,7 @@ class DepartmentService(Queryset):
                                                              })
                         for position in positions:
                             position_list.append({
+                                'id': position.id,
                                 'name': position.name,
                                 'base_salary': position.base_salary,
                                 'position_count': position.position_count,
