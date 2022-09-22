@@ -46,19 +46,19 @@ class Queryset:
             return None
         return f"{domain_name}?page={page - 1}&page_size={page_size}"
 
-    @classmethod
-    def pagination_for_shtatka_list(cls, page: int, page_size: int, model,  request: Request):
-        domain_name = request.url._url.split('?')[0]
-        _page = cls.get_page(page)
-        query = select([cls.model])
-        if filter:
-            filter_field = values['filter_field']
-            query = query.where(
-                cls.model.c.filter_field ==
-            )
-        query = query.limit(page_size).offset(_page * page_size)
-        count = await cls.count()
-        next_page = cls.get_next_page(page, page_size, count, domain_name=domain_name)
-        prev_page = cls.get_prev_page(page, page_size, domain_name=domain_name)
-        results = await database.fetch_all(query)
-        return dict(next=next_page, previous=prev_page, count=count, results=results)
+    # @classmethod
+    # def pagination_for_shtatka_list(cls, page: int, page_size: int, model,  request: Request):
+    #     domain_name = request.url._url.split('?')[0]
+    #     _page = cls.get_page(page)
+    #     query = select([cls.model])
+    #     if filter:
+    #         filter_field = values['filter_field']
+    #         query = query.where(
+    #             cls.model.c.filter_field ==
+    #         )
+    #     query = query.limit(page_size).offset(_page * page_size)
+    #     count = await cls.count()
+    #     next_page = cls.get_next_page(page, page_size, count, domain_name=domain_name)
+    #     prev_page = cls.get_prev_page(page, page_size, domain_name=domain_name)
+    #     results = await database.fetch_all(query)
+    #     return dict(next=next_page, previous=prev_page, count=count, results=results)
