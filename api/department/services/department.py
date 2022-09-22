@@ -272,7 +272,6 @@ class DepartmentService(Queryset):
 
     @staticmethod
     async def client_shtatka_detail(client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated)):
-        data = []
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
         if shtat_department:
@@ -322,6 +321,7 @@ class DepartmentService(Queryset):
                                 'right_coefficient': position.right_coefficient
                             })
                         department_list.append({
+                            'id': department.id,
                             'name': department.name,
                             'positions': position_list,
                             'total_count': department.total_count,
