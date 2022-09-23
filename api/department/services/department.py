@@ -254,14 +254,26 @@ class DepartmentService(Queryset):
         domain_name.insert(4, 's')
         domain_name = ''.join(domain_name)
         results = []
+        user_role = await database.fetch_one(
+            query='SELECT name FROM user_roles WHERE id= :role_id',
+            values={'role_id': user.role_id}
+        )
+        if user_role.name not in ['staff', 'head_staff']:
+            raise HTTPException(status_code=400, detail='you do not have permission')
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
         if shtat_department:
+            status = 'pending'
+            if user_role:
+                if user_role.name == 'head_staff':
+                    status = 'checked'
+                elif user_role.name == 'staff':
+                    status = 'pending'
             shtat_department_id = shtat_department.shtat_department_id
             shtatka_query = 'SELECT  cl.id, cl.status,shto.name, shto.organization_tin ' \
                             'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
                             'ON cl.parent_id=shto.id ' \
-                            'WHERE parent_id in (' \
+                            'WHERE cl.status= :status and parent_id in (' \
                             'SELECT organization_id FROM shtat_department_organizations ' \
                             'WHERE shtat_department_id= :shtat_department_id) ORDER BY cl.id ' \
                             'LIMIT :page_size OFFSET :page; '
@@ -272,7 +284,8 @@ class DepartmentService(Queryset):
                 {
                     'shtat_department_id': shtat_department_id,
                     'page_size': page_size,
-                    'page': page
+                    'page': page,
+                    'status': status
                 })
             total_count = await get_count(ClientShtatkaTable)
             next_page = get_next_page(page=page+1, page_size=page_size, count=total_count, domain_name=domain_name)
