@@ -354,7 +354,7 @@ class DepartmentService(Queryset):
                                 'id': position.id,
                                 'name': position.name,
                                 'base_salary': position.base_salary,
-                                'position_count': position.position_count,
+                                'count': position.position_count,
                                 'bonus_salary': position.bonus_salary,
                                 'minimal_salary': position.minimal_salary,
                                 'other_bonus_salary': position.other_bonus_salary,
