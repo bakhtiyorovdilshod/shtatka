@@ -275,8 +275,8 @@ class DepartmentService(Queryset):
                     'page': page
                 })
             total_count = await get_count(ClientShtatkaTable)
-            next_page = get_next_page(page=page, page_size=page_size, count=total_count, domain_name=domain_name)
-            previous_page = get_prev_page(page=page, page_size=page_size, domain_name=domain_name)
+            next_page = get_next_page(page=page+1, page_size=page_size, count=total_count, domain_name=domain_name)
+            previous_page = get_prev_page(page=page+1, page_size=page_size, domain_name=domain_name)
             for shtatka in shtatkas:
                 results.append({
                     'id': shtatka.id,
@@ -371,8 +371,8 @@ class DepartmentService(Queryset):
                         'departments': department_list
                     })
                 total_count = await get_count(ClientShtatkaTable)
-                next_page = get_next_page(page=page, page_size=page_size, count=total_count, domain_name=domain_name)
-                previous_page = get_prev_page(page=page, page_size=page_size, domain_name=domain_name)
+                next_page = get_next_page(page=page+1, page_size=page_size, count=total_count, domain_name=domain_name)
+                previous_page = get_prev_page(page=page+1, page_size=page_size, domain_name=domain_name)
                 return dict(next=next_page, previous=previous_page, count=total_count, results=documents)
             else:
                 return {}
