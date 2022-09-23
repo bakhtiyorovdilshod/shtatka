@@ -59,7 +59,7 @@ async def department_users(client_shtatka_id: int, page: int = 1, page_size: int
     return result
 
 
-@router.get('/departments/sent_shtatka/{client_shtatka_id}/get_excel/',  tags=['sent_shtatka'])
+@router.get('/departments/sent_shtatka/{child_shtatka_id}/get_excel/',  tags=['sent_shtatka'])
 async def department_users(child_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated)):
     result = await DepartmentService().convert_execl(child_shtatka_id=child_shtatka_id)
     return xls_response(result, 'shtatka.xlsx')
