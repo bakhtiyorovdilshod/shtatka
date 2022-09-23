@@ -18,7 +18,7 @@ async def create_department(data: CreateShtatDepartmentSchema, user: UserDetailS
 
 
 @router.get('/department/list/',  tags=['department'])
-async def department_list(page: int = 1, page_size: int = 2, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
+async def department_list(page: int = 1, page_size: int = 5, request: Request = None, user: UserDetailSchema = Depends(is_authenticated)):
     service_result = await DepartmentService().all_for_pagination(page=page, page_size=page_size, request=request)
     return service_result
 

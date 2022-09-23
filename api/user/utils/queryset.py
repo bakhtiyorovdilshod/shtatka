@@ -9,7 +9,9 @@ class Queryset:
 
     @classmethod
     async def all_for_pagination(cls, page: int, page_size: int, request: Request = None):
-        domain_name = request.url._url.split('?')[0]
+        domain_name = list(request.url._url.split('?')[0])
+        domain_name.insert(4, 's')
+        domain_name = ''.join(domain_name)
         _page = cls.get_page(page)
         query = select([cls.model])
         query = query.limit(page_size).offset(_page * page_size)
