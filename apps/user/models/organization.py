@@ -19,6 +19,7 @@ class StatusChoice(enum.Enum):
     checked = 'checked'
     approved = 'approved'
     confirmed = 'confirmed'
+    finished = 'finished'
 
 
 class TypeChoice(enum.Enum):
