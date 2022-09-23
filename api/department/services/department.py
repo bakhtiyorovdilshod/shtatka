@@ -5,12 +5,14 @@ from passlib.handlers.pbkdf2 import pbkdf2_sha256
 from xlsxwriter import Workbook
 
 from api.department.schemas.department import CreateShtatDepartmentSchema, UpdateShtatDepartmentSchema
+from api.department.utils.page import get_next_page, get_count, get_prev_page, get_page
 from api.user.schemas.user import UserDetailSchema
 from api.user.services.auth import is_authenticated
 from api.user.utils.queryset import Queryset
 from apps.user.models import ShtatDepartmentTable, ShtatDepartmentUser, UserTable, OrganizationTable, \
-    ShtatDepartmentOrganizationTable
+    ShtatDepartmentOrganizationTable, ClientShtatkaTable
 from core.settings import database
+from fastapi import Request
 import locale
 
 
@@ -247,8 +249,9 @@ class DepartmentService(Queryset):
         return data
 
     @staticmethod
-    async def client_shtatka_list(user: UserDetailSchema = Depends(is_authenticated)):
-        data = []
+    async def client_shtatka_list(page: int, page_size: int, user: UserDetailSchema = Depends(is_authenticated),  request: Request = None):
+        domain_name = request.url._url.split('?')[0]
+        results = []
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
         if shtat_department:
@@ -258,20 +261,36 @@ class DepartmentService(Queryset):
                             'ON cl.parent_id=shto.id ' \
                             'WHERE parent_id in (' \
                             'SELECT organization_id FROM shtat_department_organizations ' \
-                            'WHERE shtat_department_id= :shtat_department_id)'
-            shtatkas = await database.fetch_all(query=shtatka_query, values={'shtat_department_id': shtat_department_id})
+                            'WHERE shtat_department_id= :shtat_department_id) ORDER BY cl.id ' \
+                            'LIMIT :page_size OFFSET :page; '
+            page = get_page(page=page)
+            shtatkas = await database.fetch_all(
+                query=shtatka_query,
+                values=
+                {
+                    'shtat_department_id': shtat_department_id,
+                    'page_size': page_size,
+                    'page': page
+                })
+            total_count = await get_count(ClientShtatkaTable)
+            next_page = get_next_page(page=page, page_size=page_size, count=total_count, domain_name=domain_name)
+            previous_page = get_prev_page(page=page, page_size=page_size, domain_name=domain_name)
             for shtatka in shtatkas:
-                data.append({
+                results.append({
                     'id': shtatka.id,
                     'status': shtatka.status,
                     'organization_name': shtatka.name,
                     'organization_tin': shtatka.organization_tin,
                 })
-        return data
+            return dict(next=next_page, previous=previous_page, count=total_count, results=results)
+        return []
 
 
     @staticmethod
-    async def client_shtatka_detail(client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated)):
+    async def client_shtatka_detail(page: int, page_size: int, client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
+        domain_name = request.url._url.split('?')[0]
+        page = get_page(page)
+        print(page)
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
         if shtat_department:
@@ -289,8 +308,15 @@ class DepartmentService(Queryset):
                 })
             if shtatka:
                 documents = []
-                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id'
-                organization_children = await database.fetch_all(query=query, values={'client_shtatka_id': shtatka.id})
+                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id ORDER BY id ' \
+                        'LIMIT :page_size OFFSET :page; '
+                organization_children = await database.fetch_all(
+                    query=query, values=
+                    {
+                        'client_shtatka_id': shtatka.id,
+                        'page_size': page_size,
+                        'page': page
+                    })
                 for child in organization_children:
                     department_list = []
                     department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
@@ -341,7 +367,10 @@ class DepartmentService(Queryset):
                         'is_main': child.is_main,
                         'departments': department_list
                     })
-                return documents
+                total_count = await get_count(ClientShtatkaTable)
+                next_page = get_next_page(page=page, page_size=page_size, count=total_count, domain_name=domain_name)
+                previous_page = get_prev_page(page=page, page_size=page_size, domain_name=domain_name)
+                return dict(next=next_page, previous=previous_page, count=total_count, results=documents)
             else:
                 return {}
         return {'error': 1}

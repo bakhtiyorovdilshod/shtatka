@@ -48,14 +48,14 @@ async def department_users(user: UserDetailSchema = Depends(is_authenticated)):
 
 
 @router.get('/departments/sent_shtatka/',  tags=['sent_shtatka'])
-async def department_shtatka(page: int = 1, page_size: int = 2, user: UserDetailSchema = Depends(is_authenticated)):
-    result = await DepartmentService().client_shtatka_list(user=user)
+async def department_shtatka(page: int = 1, page_size: int = 10, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
+    result = await DepartmentService().client_shtatka_list(page=page, page_size=page_size, user=user, request=request)
     return result
 
 
 @router.get('/departments/sent_shtatka/{client_shtatka_id}/',  tags=['sent_shtatka'])
-async def department_users(client_shtatka_id, user: UserDetailSchema = Depends(is_authenticated)):
-    result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user)
+async def department_users(client_shtatka_id: int, page: int = 1, page_size: int = 10, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
+    result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user, page=page, page_size=page_size, request=request)
     return result
 
 
