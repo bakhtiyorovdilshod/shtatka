@@ -54,7 +54,7 @@ async def department_shtatka(page: int = 1, page_size: int = 10, user: UserDetai
 
 
 @router.get('/departments/sent_shtatka/{client_shtatka_id}/',  tags=['sent_shtatka'])
-async def department_users(client_shtatka_id: int, page: int = 1, page_size: int = 10, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
+async def department_users(client_shtatka_id: int, page: int = 1, page_size: int = 1, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
     result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user, page=page, page_size=page_size, request=request)
     return result
 

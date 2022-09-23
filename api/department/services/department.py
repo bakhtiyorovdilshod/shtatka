@@ -290,7 +290,6 @@ class DepartmentService(Queryset):
     async def client_shtatka_detail(page: int, page_size: int, client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
         domain_name = request.url._url.split('?')[0]
         page = get_page(page)
-        print(page)
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
         if shtat_department:
