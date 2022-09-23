@@ -250,7 +250,9 @@ class DepartmentService(Queryset):
 
     @staticmethod
     async def client_shtatka_list(page: int, page_size: int, user: UserDetailSchema = Depends(is_authenticated),  request: Request = None):
-        domain_name = request.url._url.split('?')[0]
+        domain_name = list(request.url._url.split('?')[0])
+        domain_name.insert(4, 's')
+        domain_name = ''.join(domain_name)
         results = []
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
         shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
