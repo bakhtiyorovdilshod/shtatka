@@ -266,7 +266,7 @@ class DepartmentService(Queryset):
             status = 'pending'
             if user_role:
                 if user_role.name == 'head_staff':
-                    status = 'checked'
+                    status = 'approved'
                 elif user_role.name == 'staff':
                     status = 'pending'
             shtat_department_id = shtat_department.shtat_department_id
