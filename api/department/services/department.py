@@ -476,6 +476,8 @@ class DepartmentService(Queryset):
             workbook.close()
             output.seek(0)
             return output
+        else:
+            raise HTTPException(status_code=400, detail='not found')
 
 
 
