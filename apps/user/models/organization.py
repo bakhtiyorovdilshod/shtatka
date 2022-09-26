@@ -46,6 +46,7 @@ CLIENT_SHTATKA_FIELDS = [
     sqlalchemy.Column('created_date', sqlalchemy.DateTime, server_default=func.now()),
     sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('shtat_organizations.id'), nullable=False),
     sqlalchemy.Column('status', sqlalchemy.Enum(StatusChoice), default='pending'),
+    sqlalchemy.Column('shtatka_status', sqlalchemy.String(50), default='pending'),
     sqlalchemy.Column('type', sqlalchemy.Enum(TypeChoice), nullable=False)
 
 ]

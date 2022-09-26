@@ -79,6 +79,7 @@ class DocumentService:
             if client_shtatka:
                 await database.execute(query='UPDATE client_shtatkas SET status= :status, type= :type WHERE parent_id= :parent_id', values={
                     'status': 'pending',
+                    'shtatka_status': 'pending',
                     'parent_id': organization.id,
                     'type': data.type
                 })

@@ -270,7 +270,7 @@ class DepartmentService(Queryset):
                 elif user_role.name == 'staff':
                     status = 'pending'
             shtat_department_id = shtat_department.shtat_department_id
-            shtatka_query = 'SELECT  cl.id, cl.status,shto.name, shto.organization_tin ' \
+            shtatka_query = 'SELECT  cl.id, cl.status, cl.shtatka_status, shto.name, shto.organization_tin ' \
                             'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
                             'ON cl.parent_id=shto.id ' \
                             'WHERE cl.status= :status and parent_id in (' \
@@ -293,7 +293,7 @@ class DepartmentService(Queryset):
             for shtatka in shtatkas:
                 results.append({
                     'id': shtatka.id,
-                    'status': shtatka.status,
+                    'status': shtatka.shtatka_status,
                     'organization_name': shtatka.name,
                     'organization_tin': shtatka.organization_tin,
                 })
