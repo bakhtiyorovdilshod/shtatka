@@ -273,7 +273,7 @@ class DepartmentService(Queryset):
             shtatka_query = 'SELECT  cl.id, cl.status, cl.shtatka_status, shto.name, shto.organization_tin ' \
                             'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
                             'ON cl.parent_id=shto.id ' \
-                            'WHERE cl.status= :status and parent_id in (' \
+                            'WHERE cl.shtatka_status= :status and parent_id in (' \
                             'SELECT organization_id FROM shtat_department_organizations ' \
                             'WHERE shtat_department_id= :shtat_department_id) ORDER BY cl.id ' \
                             'LIMIT :page_size OFFSET :page; '
