@@ -4,7 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from passlib.hash import pbkdf2_sha256
 
-from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema
+from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema, \
+    UserChangeStatus
 from api.user.services.auth import UserAuthenticationService
 from api.user.utils.page import fix_pagination
 from api.user.utils.queryset import Queryset
@@ -159,6 +160,21 @@ class UserService(Queryset):
                 'department': department
             })
         return data
+
+    @staticmethod
+    async def change_status(data: UserChangeStatus):
+        real_user = await database.fetch_one(
+            query='SELECT id FROM users WHERE id= :user_id',
+            values={'user_id': data.user_id}
+        )
+        if not real_user:
+            raise HTTPException(status_code=400, detail="user is not found")
+        await database.execute(
+            query='UPDATE users SET is_active= :is_active WHERE id= :user_id;',
+            values={'user_id': data.user_id, 'is_active': data.is_active}
+        )
+        return {'status': 'success'}
+
 
 
 

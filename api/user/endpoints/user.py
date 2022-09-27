@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from passlib.handlers.pbkdf2 import pbkdf2_sha256
 
 from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema, \
-    UserDetailSchema
+    UserDetailSchema, UserChangeStatus
 from api.user.services.auth import UserAuthenticationService, is_authenticated
 from api.user.services.user import UserService
 from fastapi import Depends, HTTPException
@@ -72,6 +72,12 @@ async def create_user(data: UserCreateSchema):
 @router.post('/shtat/user/login/', tags=['user'])
 async def login_user(data: UserLoginSchema):
     result = await UserService().login(data=data)
+    return result
+
+
+@router.post('/shtat/user/change_status/', tags=['user'])
+async def login_user(data: UserChangeStatus, user: UserDetailSchema = Depends(is_authenticated)):
+    result = await UserService().change_status(data=data)
     return result
 
 

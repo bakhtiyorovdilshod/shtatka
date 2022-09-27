@@ -37,3 +37,8 @@ class UserDetailSchema(BaseModel):
     # username: str
     role_id: int
     is_active: bool
+
+
+class UserChangeStatus(BaseModel):
+    is_active: bool
+    user_id: int
