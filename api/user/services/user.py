@@ -5,7 +5,7 @@ from sqlalchemy import select
 from passlib.hash import pbkdf2_sha256
 
 from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema, \
-    UserChangeStatus
+    UserChangeStatus, UserPasswordCheck
 from api.user.services.auth import UserAuthenticationService
 from api.user.utils.page import fix_pagination
 from api.user.utils.queryset import Queryset
@@ -174,6 +174,10 @@ class UserService(Queryset):
             values={'user_id': data.user_id, 'is_active': data.is_active}
         )
         return {'status': 'success'}
+
+    @staticmethod
+    async def check_password(data: UserPasswordCheck):
+        pass
 
 
 
