@@ -182,7 +182,7 @@ class UserService(Queryset):
             values={'user_id': user.id}
         )
         if not pbkdf2_sha256.verify(data.password, user.password):
-            raise HTTPException(status_code=400, message='Parol xato kiritildi')
+            raise HTTPException(status_code=400, detail={'message': 'Parol xato kiritildi'})
         return {'status': 'success'}
 
     @staticmethod
