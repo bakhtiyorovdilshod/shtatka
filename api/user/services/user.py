@@ -1,12 +1,12 @@
 from typing import Union, Optional
 import requests, json
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from sqlalchemy import select
 from passlib.hash import pbkdf2_sha256
 
 from api.user.schemas.user import UpdateOrganizationSchema, CreateRoleSchema, UserCreateSchema, UserLoginSchema, \
-    UserChangeStatus, UserPasswordCheck
-from api.user.services.auth import UserAuthenticationService
+    UserChangeStatus, UserPasswordCheck, UserDetailSchema, UserChangePassword
+from api.user.services.auth import UserAuthenticationService, is_authenticated
 from api.user.utils.page import fix_pagination
 from api.user.utils.queryset import Queryset
 from apps.user.models import UserRoleTable, UserTable, OrganizationTable
@@ -176,8 +176,22 @@ class UserService(Queryset):
         return {'status': 'success'}
 
     @staticmethod
-    async def check_password(data: UserPasswordCheck):
-        pass
+    async def check_password(data: UserPasswordCheck, user: UserDetailSchema = Depends(is_authenticated)):
+        user = await database.fetch_one(
+            query='SELECT password FROM users WHERE id= :user_id',
+            values={'user_id': user.id}
+        )
+        if pbkdf2_sha256.verify(data.password, user.password):
+            return {'status': 'success'}
+        return {'status': 'failed'}
+
+    @staticmethod
+    async def change_password(data: UserChangePassword, user: UserDetailSchema = Depends(is_authenticated)):
+        user = await database.execute(
+            query='UPDATE users set password= :new_password WHERE id= :user_id',
+            values={'user_id': user.id, 'new_password': pbkdf2_sha256.hash(data.password)}
+        )
+        return {'status': 'success'}
 
 
 

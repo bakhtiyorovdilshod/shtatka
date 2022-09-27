@@ -35,6 +35,7 @@ class UserDetailSchema(BaseModel):
     id: int
     full_name: str
     # username: str
+    # password: str
     role_id: int
     is_active: bool
 
@@ -45,4 +46,8 @@ class UserChangeStatus(BaseModel):
 
 
 class UserPasswordCheck(BaseModel):
+    password: str
+
+
+class UserChangePassword(BaseModel):
     password: str
