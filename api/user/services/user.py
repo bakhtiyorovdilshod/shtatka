@@ -181,9 +181,9 @@ class UserService(Queryset):
             query='SELECT password FROM users WHERE id= :user_id',
             values={'user_id': user.id}
         )
-        if pbkdf2_sha256.verify(data.password, user.password):
-            return {'status': 'success'}
-        return {'status': 'failed'}
+        if not pbkdf2_sha256.verify(data.password, user.password):
+            raise HTTPException(status_code=400, detail='password is in incorrect')
+        return {'status': 'success'}
 
     @staticmethod
     async def change_password(data: UserChangePassword, user: UserDetailSchema = Depends(is_authenticated)):
