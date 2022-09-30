@@ -324,7 +324,7 @@ class DepartmentService(Queryset):
                 })
             if shtatka:
                 documents = []
-                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id ORDER BY id ' \
+                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id and is_main=1 ORDER BY id ' \
                         'LIMIT :page_size OFFSET :page; '
                 organization_children = await database.fetch_all(
                     query=query, values=
@@ -381,7 +381,17 @@ class DepartmentService(Queryset):
                         'department_code': child.department_code,
                         'small_department_code': child.small_department_code,
                         'is_main': child.is_main,
-                        'departments': department_list
+                        'departments': department_list,
+                        'one_month_salary_for_long_service': 40013718,
+                        'one_month_salary_for_service': 40013718,
+                        'one_year_salary': 40013718,
+                        'salary_for_vacancy_and_incapability': 40013718,
+                        'financial_support_one': 40013718,
+                        'financial_support_two': 40013718,
+                        'one_year_salary_for_incapability': 40013718,
+                        'one_special_reward_salary': 40013718,
+                        'high_accountant': 'Mr K.K'
+
                     })
                 total_count = await get_count(ClientShtatkaTable)
                 next_page = get_next_page(page=page+1, page_size=page_size, count=total_count, domain_name=domain_name)

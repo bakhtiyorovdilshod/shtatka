@@ -105,7 +105,7 @@ async def get_user_detail(user: UserDetailSchema = Depends(is_authenticated)):
     role = await database.fetch_one(query='SELECT name FROM user_roles WHERE id= :role_id', values={'role_id': user.role_id})
     if role:
         role_name = role.name
-    return {'full_name': user.full_name, 'active': user.is_active, 'is_shtatka': True, 'role': role_name}
+    return {'full_name': user.username, 'active': user.is_active, 'is_shtatka': True, 'role': role_name}
 
 
 @router.get('/shtat/user/logout/',  tags=['user'])

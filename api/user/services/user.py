@@ -134,7 +134,7 @@ class UserService(Queryset):
             raise HTTPException(status_code=400, detail='user is not active')
 
         access_token = UserAuthenticationService().create_access_token(user.id)
-        return {'status': 'success', 'access_token': access_token, 'user_id': user.id, 'role': user.name}
+        return {'status': 'success', 'access_token': access_token, 'user_id': user.id, 'role': user.name, 'full_name': user.username}
 
     @staticmethod
     async def shtat_users():

@@ -7,3 +7,6 @@ from apps.user.models.organization import *
 from apps.user.models.department import *
 from apps.user.models.permission import *
 from apps.user.models.position import *
+from apps.user.models.region import *
+
+

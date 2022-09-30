@@ -34,7 +34,7 @@ class UserLoginSchema(BaseModel):
 class UserDetailSchema(BaseModel):
     id: int
     full_name: str
-    # username: str
+    username: str
     # password: str
     role_id: int
     is_active: bool
