@@ -30,6 +30,8 @@ class ListDocumentSchema(BaseModel):
     chapter_code: str
     department_code: str
     small_department_code: str
+    region: str
+    district: str
     name: str
     is_main: bool
     departments: List[ListDepartmentSchema]

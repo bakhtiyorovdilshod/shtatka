@@ -8,7 +8,7 @@ BASE_FIELDS = base_model()
 FIELDS = [
     *BASE_FIELDS,
     sqlalchemy.Column('name', sqlalchemy.String(255)),
-    sqlalchemy.Column('client_shtatka_id', sqlalchemy.ForeignKey('client_shtatkas.id'))
+    sqlalchemy.Column('organization_child_id', sqlalchemy.ForeignKey('organization_children.id'))
 
 ]
 
