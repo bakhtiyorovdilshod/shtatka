@@ -38,6 +38,7 @@ class ListDocumentSchema(BaseModel):
 
 
 class DistrictDocumentSchema(BaseModel):
+    name: str
     address: str
     chapter_code: str
     department_code: str
