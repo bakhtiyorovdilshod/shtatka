@@ -37,7 +37,34 @@ class ListDocumentSchema(BaseModel):
     departments: List[ListDepartmentSchema]
 
 
+class DistrictDocumentSchema(BaseModel):
+    address: str
+    chapter_code: str
+    department_code: str
+    small_department_code: str
+    district: str
+    departments: List[ListDepartmentSchema]
+
+
+class RegionDocumentSchema(BaseModel):
+    address: str
+    chapter_code: str
+    department_code: str
+    small_department_code: str
+    region: str
+    name: str
+    departments: List[ListDepartmentSchema]
+    districts: List[DistrictDocumentSchema]
+
+
 class AcceptDocumentSchema(BaseModel):
     organization_tin: str
     type: str
-    documents: List[ListDocumentSchema]
+    address: str
+    chapter_code: str
+    department_code: str
+    small_department_code: str
+    region: str
+    name: str
+    departments: List[ListDepartmentSchema]
+    regions: List[RegionDocumentSchema]

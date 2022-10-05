@@ -300,7 +300,6 @@ class DepartmentService(Queryset):
             return dict(next=next_page, previous=previous_page, count=total_count, results=results)
         return []
 
-
     @staticmethod
     async def client_shtatka_detail(page: int, page_size: int, client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
         domain_name = list(request.url._url.split('?')[0])
@@ -488,6 +487,10 @@ class DepartmentService(Queryset):
             return output
         else:
             raise HTTPException(status_code=400, detail='not found')
+
+    @staticmethod
+    async def client_shtatka_region(client_shtatka_id: int):
+        pass
 
 
 

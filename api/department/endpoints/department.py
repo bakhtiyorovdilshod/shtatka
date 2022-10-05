@@ -58,6 +58,7 @@ async def department_users(client_shtatka_id: int, page: int = 1, page_size: int
     result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user, page=page, page_size=page_size, request=request)
     return result
 
+
 @router.get('/departments/sent_shtatka/{client_shtatka_id}/regions/',  tags=['sent_shtatka'])
 async def client_shtatka_regions():
     pass
