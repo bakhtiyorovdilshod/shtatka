@@ -329,9 +329,8 @@ class DepartmentService(Queryset):
                 query = 'SELECT child.id, child.child_name, child.address, child.chapter_code,' \
                         'child.department_code, child.small_department_code, child.is_main,' \
                         'child.is_republic, child.client_shtatka_id ' \
-                        'FROM organization_children as child INNER JOIN client_shtatka_regions ' \
-                        'ON child.id = client_shtatka_regions.organization_child_id ' \
-                        'WHERE client_shtatka_id= :client_shtatka_id and is_republic=TRUE ORDER BY id ' \
+                        'FROM organization_children as child ' \
+                        'WHERE child.client_shtatka_id= :client_shtatka_id and child.is_republic=TRUE ORDER BY id ' \
                         'LIMIT :page_size OFFSET :page; '
                 values = {
                     'client_shtatka_id': int(shtatka.id),
@@ -358,7 +357,7 @@ class DepartmentService(Queryset):
                             'child.department_code, child.small_department_code, child.is_main,' \
                             'child.is_republic, child.client_shtatka_id ' \
                             'FROM organization_children as child INNER JOIN client_shtatka_regions ' \
-                            'ON organization_children.id = client_shtatka_regions.organization_child_id ' \
+                            'ON child.id = client_shtatka_regions.organization_child_id ' \
                             'WHERE client_shtatka_id= :client_shtatka_id and is_main=TRUE ' \
                             'and client_shtatka_regions.id IN ' \
                             '(SELECT client_shtatka_region_id FROM client_shtatka_districts ' \
@@ -367,7 +366,6 @@ class DepartmentService(Queryset):
                     values = {
                         'client_shtatka_id': int(shtatka.id),
                         'page_size': page_size,
-                        'region_id': region_id,
                         'district_id': district_id,
                         'page': page
                     }
