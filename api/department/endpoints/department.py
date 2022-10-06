@@ -54,14 +54,25 @@ async def department_shtatka(page: int = 1, page_size: int = 2, user: UserDetail
 
 
 @router.get('/departments/sent_shtatka/{client_shtatka_id}/',  tags=['sent_shtatka'])
-async def department_users(client_shtatka_id: int, page: int = 1, page_size: int = 1, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
-    result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user, page=page, page_size=page_size, request=request)
+async def department_users(client_shtatka_id: int, page: int = 1, page_size: int = 1,
+                           user: UserDetailSchema = Depends(is_authenticated),
+                           request: Request = None, region_id: int = None, district_id: int = None):
+    result = await DepartmentService().client_shtatka_detail(client_shtatka_id=client_shtatka_id, user=user, page=page,
+                                                             page_size=page_size, request=request,
+                                                             region_id=region_id, district_id=district_id)
     return result
 
 
 @router.get('/departments/sent_shtatka/{client_shtatka_id}/regions/',  tags=['sent_shtatka'])
-async def client_shtatka_regions():
-    pass
+async def client_shtatka_regions(client_shtatka_id: int):
+    result = await DepartmentService().client_shtatka_regions(client_shtatka_id=client_shtatka_id)
+    return result
+
+
+@router.get('/departments/sent_shtatka/region/{region_id}/districts/',  tags=['sent_shtatka'])
+async def client_shtatka_regions(region_id: int):
+    result = await DepartmentService().client_shtatka_region_districts(region_id=region_id)
+    return result
 
 
 @router.get('/departments/sent_shtatka/{child_shtatka_id}/get_excel/',  tags=['sent_shtatka'])

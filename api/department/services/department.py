@@ -301,13 +301,16 @@ class DepartmentService(Queryset):
         return []
 
     @staticmethod
-    async def client_shtatka_detail(page: int, page_size: int, client_shtatka_id: int, user: UserDetailSchema = Depends(is_authenticated), request: Request = None):
+    async def client_shtatka_detail(page: int, page_size: int, client_shtatka_id: int,
+                                    user: UserDetailSchema = Depends(is_authenticated),
+                                    request: Request = None, region_id: int = None,
+                                    district_id: int = None):
         domain_name = list(request.url._url.split('?')[0])
         domain_name.insert(4, 's')
         domain_name = ''.join(domain_name)
         page = get_page(page)
         query = 'SELECT shtat_department_id FROM shtat_department_users WHERE user_id= :user_id'
-        shtat_department = await database.fetch_one(query=query, values={'user_id': user.id})
+        shtat_department = await database.fetch_one(query=query, values={'user_id': int(user.id)})
         if shtat_department:
             shtatka_query = 'SELECT cl.id, cl.status,shto.name, shto.organization_tin, cl.parent_id ' \
                             'FROM client_shtatkas as cl INNER JOIN shtat_organizations as shto ' \
@@ -319,23 +322,63 @@ class DepartmentService(Queryset):
                 query=shtatka_query,
                 values={
                     'client_shtatka_id': int(client_shtatka_id),
-                    'shtat_department_id': shtat_department.shtat_department_id
+                    'shtat_department_id': int(shtat_department.shtat_department_id)
                 })
             if shtatka:
                 documents = []
-                query = 'SELECT * FROM organization_children WHERE client_shtatka_id= :client_shtatka_id and is_main=1 ORDER BY id ' \
+                query = 'SELECT child.id, child.child_name, child.address, child.chapter_code,' \
+                        'child.department_code, child.small_department_code, child.is_main,' \
+                        'child.is_republic, child.client_shtatka_id ' \
+                        'FROM organization_children as child INNER JOIN client_shtatka_regions ' \
+                        'ON child.id = client_shtatka_regions.organization_child_id ' \
+                        'WHERE client_shtatka_id= :client_shtatka_id and is_republic=TRUE ORDER BY id ' \
                         'LIMIT :page_size OFFSET :page; '
-                organization_children = await database.fetch_all(
-                    query=query, values=
-                    {
-                        'client_shtatka_id': shtatka.id,
+                values = {
+                    'client_shtatka_id': int(shtatka.id),
+                    'page_size': page_size,
+                    'page': page
+                }
+                if region_id:
+                    query = 'SELECT child.id, child.child_name, child.address, child.chapter_code,' \
+                            'child.department_code, child.small_department_code, child.is_main,' \
+                            'child.is_republic, child.client_shtatka_id ' \
+                            'FROM organization_children as child INNER JOIN client_shtatka_regions ' \
+                            'ON child.id = client_shtatka_regions.organization_child_id ' \
+                            'WHERE client_shtatka_id= :client_shtatka_id and is_main=TRUE ' \
+                            'and client_shtatka_regions.id= :region_id ORDER BY id ' \
+                            'LIMIT :page_size OFFSET :page; '
+                    values = {
+                        'client_shtatka_id': int(shtatka.id),
                         'page_size': page_size,
+                        'region_id': region_id,
                         'page': page
-                    })
+                    }
+                if region_id and district_id:
+                    query = 'SELECT child.id, child.child_name, child.address, child.chapter_code,' \
+                            'child.department_code, child.small_department_code, child.is_main,' \
+                            'child.is_republic, child.client_shtatka_id ' \
+                            'FROM organization_children as child INNER JOIN client_shtatka_regions ' \
+                            'ON organization_children.id = client_shtatka_regions.organization_child_id ' \
+                            'WHERE client_shtatka_id= :client_shtatka_id and is_main=TRUE ' \
+                            'and client_shtatka_regions.id IN ' \
+                            '(SELECT client_shtatka_region_id FROM client_shtatka_districts ' \
+                            'WHERE id= :district_id) ORDER BY id ' \
+                            'LIMIT :page_size OFFSET :page; '
+                    values = {
+                        'client_shtatka_id': int(shtatka.id),
+                        'page_size': page_size,
+                        'region_id': region_id,
+                        'district_id': district_id,
+                        'page': page
+                    }
+
+                organization_children = await database.fetch_all(
+                    query=query, values=values
+                )
                 for child in organization_children:
                     department_list = []
                     department_query = 'SELECT * FROM client_departments WHERE child_id= :child_id'
-                    departments = await database.fetch_all(query=department_query, values={'child_id': child.id})
+                    departments = await database.fetch_all(query=department_query, values={'child_id': int(child.id)})
                     for department in departments:
                         position_list = []
                         positions = await database.fetch_all(query='SELECT cdp.id, cdp.name, cdp.base_salary, cdp.position_count, '
@@ -346,7 +389,7 @@ class DepartmentService(Queryset):
                                                                    'FROM client_department_positions as cdp '
                                                                    'WHERE client_department_id= :client_department_id',
                                                              values={
-                                                                 'client_department_id': department.id
+                                                                 'client_department_id': int(department.id)
                                                              })
                         for position in positions:
                             position_list.append({
@@ -489,8 +532,29 @@ class DepartmentService(Queryset):
             raise HTTPException(status_code=400, detail='not found')
 
     @staticmethod
-    async def client_shtatka_region(client_shtatka_id: int):
-        pass
+    async def client_shtatka_regions(client_shtatka_id: int):
+        results = list()
+        query = 'SELECT id, name from client_shtatka_regions WHERE organization_child_id IN' \
+                '(SELECT id FROM organization_children WHERE client_shtatka_id= :client_shtatka_id)'
+        regions = await database.fetch_all(query=query, values={'client_shtatka_id': client_shtatka_id})
+        for region in regions:
+            results.append({
+                'id': region.id,
+                'name': region.name
+            })
+        return results
+
+    @staticmethod
+    async def client_shtatka_region_districts(region_id: int):
+        results = list()
+        query = 'SELECT id, name from client_shtatka_districts WHERE client_shtatka_region_id= :region_id'
+        districts = await database.fetch_all(query=query, values={'region_id': region_id})
+        for district in districts:
+            results.append({
+                'id': district.id,
+                'name': district.name
+            })
+        return results
 
 
 

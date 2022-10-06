@@ -41,7 +41,8 @@ class DocumentService:
             chapter_code=data.chapter_code,
             department_code=data.department_code,
             small_department_code=data.small_department_code,
-            is_main=True,
+            is_republic=True,
+            is_main=False,
             client_shtatka_id=client_shtatka_id
         )
         child_id = await database.execute(child)
@@ -134,6 +135,7 @@ class DocumentService:
         await database.execute_many(query=query, values=position_values)
 
     async def create_client_shtatka_regions(self, data, client_shtatka_id):
+        await self.create_main_client_shtatka(data=data, client_shtatka_id=client_shtatka_id)
         position_values = []
         for document in data.regions:
             child = OrganizationChildTable.insert().values(

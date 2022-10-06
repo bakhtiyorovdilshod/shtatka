@@ -36,6 +36,7 @@ FIELDS = [
     sqlalchemy.Column('department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('small_department_code', sqlalchemy.String(255), nullable=False),
     sqlalchemy.Column('is_main', sqlalchemy.Boolean(), default=False),
+    sqlalchemy.Column('is_republic', sqlalchemy.BOOLEAN(), default=False),
     sqlalchemy.Column('client_shtatka_id', sqlalchemy.ForeignKey('client_shtatkas.id'), nullable=False)
 
 ]
