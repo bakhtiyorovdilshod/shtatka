@@ -1,5 +1,4 @@
-# Shtataka (Service for budget organization in order to make up their teh)
-## Colab: https://colab.research.google.com/drive/1tODXqiZ3jA5q2fr02_blY8gk685oArlO?usp=sharing
+# Shtataka (Service for budget organization in order to make up their the structure of employees)
 ## Run project
     1. docker-compose up --build
 
